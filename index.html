@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>化學反應式規範 - 基本結構</title>
+    <style>
+        body { font-family: sans-serif; display: flex; margin: 0; background: #f4f7f6; }
+        nav { width: 200px; background: #2c3e50; height: 100vh; padding: 20px; position: fixed; }
+        nav button { width: 100%; padding: 10px; margin-bottom: 10px; cursor: pointer; border: none; border-radius: 5px; background: #34495e; color: white; transition: 0.3s; }
+        nav button:hover { background: #1abc9c; }
+        nav button.active { background: #1abc9c; font-weight: bold; }
+        main { margin-left: 240px; padding: 40px; flex-grow: 1; }
+        .formula-box { background: white; padding: 20px; border-radius: 8px; border-left: 5px solid #1abc9c; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .highlight { color: #e74c3c; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <nav>
+        <button class="active" onclick="location.href='page1.html'">1. 基本結構</button>
+        <button onclick="location.href='page2.html'">2. 物質狀態</button>
+        <button onclick="location.href='page3.html'">3. 反應條件</button>
+        <button onclick="location.href='page4.html'">4. 係數平衡</button>
+	<button onclick="location.href='quiz.html'">5. 互動練習</button>
+    </nav>
+    <main>
+        <h1>1. 基本結構：左、中、右</h1>
+        <p>化學反應式是化學語言的句子，由三個主要部分構成：</p>
+        <div class="formula-box">
+            <h2>反應物 → 產物</h2>
+            <ul>
+                <li><strong>左側（反應物）：</strong> 參與反應的物質。</li>
+                <li><strong>箭頭（→）：</strong> 代表反應方向，讀作「產生」。<span class="highlight">不可寫成等號（=）。</span></li>
+                <li><strong>右側（產物）：</strong> 反應後生成的物質。</li>
+            </ul>
+            <p><strong>規範提示：</strong> 若物質不只一種，彼此之間用「<span class="highlight">+</span>」號連接。</p>
+        </div>
+    </main>
+</body>
+</html>
