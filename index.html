@@ -2,38 +2,51 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>化學反應式規範 - 基本結構</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>八下理化學習網 - 鍾青府老師</title>
     <style>
-        body { font-family: sans-serif; display: flex; margin: 0; background: #f4f7f6; }
-        nav { width: 200px; background: #2c3e50; height: 100vh; padding: 20px; position: fixed; }
-        nav button { width: 100%; padding: 10px; margin-bottom: 10px; cursor: pointer; border: none; border-radius: 5px; background: #34495e; color: white; transition: 0.3s; }
-        nav button:hover { background: #1abc9c; }
-        nav button.active { background: #1abc9c; font-weight: bold; }
-        main { margin-left: 240px; padding: 40px; flex-grow: 1; }
-        .formula-box { background: white; padding: 20px; border-radius: 8px; border-left: 5px solid #1abc9c; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .highlight { color: #e74c3c; font-weight: bold; }
+        body { font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif; background: #f0f2f5; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: white; width: 100%; max-width: 600px; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        h1 { color: #2c3e50; margin-bottom: 5px; }
+        .teacher-info { color: #7f8c8d; font-size: 1.1em; margin-bottom: 40px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+        
+        .menu-list { display: flex; flex-direction: column; gap: 15px; }
+        .menu-btn { 
+            padding: 18px; 
+            font-size: 1.2em; 
+            color: white; 
+            background: #3498db; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            text-decoration: none; 
+            font-weight: bold;
+            display: block;
+            box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
+        }
+        .menu-btn:hover { background: #2980b9; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+        .menu-btn.disabled { background: #bdc3c7; cursor: not-allowed; box-shadow: none; }
+        .menu-btn.disabled:hover { transform: none; }
+        
+        footer { margin-top: 50px; color: #bdc3c7; font-size: 0.9em; }
     </style>
 </head>
 <body>
-    <nav>
-        <button class="active" onclick="location.href='page1.html'">1. 基本結構</button>
-        <button onclick="location.href='page2.html'">2. 物質狀態</button>
-        <button onclick="location.href='page3.html'">3. 反應條件</button>
-        <button onclick="location.href='page4.html'">4. 係數平衡</button>
-	<button onclick="location.href='quiz.html'">5. 互動練習</button>
-    </nav>
-    <main>
-        <h1>1. 基本結構：左、中、右</h1>
-        <p>化學反應式是化學語言的句子，由三個主要部分構成：</p>
-        <div class="formula-box">
-            <h2>反應物 → 產物</h2>
-            <ul>
-                <li><strong>左側（反應物）：</strong> 參與反應的物質。</li>
-                <li><strong>箭頭（→）：</strong> 代表反應方向，讀作「產生」。<span class="highlight">不可寫成等號（=）。</span></li>
-                <li><strong>右側（產物）：</strong> 反應後生成的物質。</li>
-            </ul>
-            <p><strong>規範提示：</strong> 若物質不只一種，彼此之間用「<span class="highlight">+</span>」號連接。</p>
+    <div class="container">
+        <h1>八下理化</h1>
+        <div class="teacher-info">授課師：普門中學 鍾青府</div>
+        
+        <div class="menu-list">
+            <a href="page1.html" class="menu-btn">1-2 化學反應式測驗</a>
+            
+            <a href="#" class="menu-btn disabled">1-3 氧化與還原 (開發中)</a>
+            <a href="#" class="menu-btn disabled">1-4 物理變化與化學變化 (開發中)</a>
         </div>
-    </main>
+
+        <footer>
+            &copy; 2026 普門中學 理化科教室
+        </footer>
+    </div>
 </body>
 </html>
