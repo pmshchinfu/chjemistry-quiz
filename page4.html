@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>化學反應式規範 - 係數平衡</title>
+    <style>
+        body { font-family: sans-serif; display: flex; margin: 0; background: #f4f7f6; }
+        nav { width: 200px; background: #2c3e50; height: 100vh; padding: 20px; position: fixed; }
+        nav button { width: 100%; padding: 10px; margin-bottom: 10px; cursor: pointer; border: none; border-radius: 5px; background: #34495e; color: white; }
+        nav button:hover { background: #e67e22; }
+        nav button.active { background: #e67e22; font-weight: bold; }
+        main { margin-left: 240px; padding: 40px; }
+        .rule { background: #fef9e7; border: 1px solid #f39c12; padding: 20px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <button onclick="location.href='page1.html'">1. 基本結構</button>
+        <button onclick="location.href='page2.html'">2. 物質狀態</button>
+        <button onclick="location.href='page3.html'">3. 反應條件</button>
+        <button class="active" onclick="location.href='page4.html'">4. 係數平衡</button>
+	<button onclick="location.href='quiz.html'">5. 互動練習</button>
+    </nav>
+    <main>
+        <h1>4. 係數平衡（原子守恆）</h1>
+        <p>根據<strong>質量守恆定律</strong>，反應前後原子的種類與個數必須相等。</p>
+        <div class="rule">
+            <ul>
+                <li><strong>係數：</strong> 寫在化學式前方的整數（例如：<span style="color:red; font-size:1.2em;">2</span>H₂）。</li>
+                <li><strong>最簡化：</strong> 係數必須是最簡整數比。</li>
+                <li><strong>省略原則：</strong> 若係數為 <span style="text-decoration: underline;">1</span> 則省略不寫。</li>
+            </ul>
+        </div>
+        <p>範例：2H₂(g) + O₂(g) → 2H₂O(l)</p>
+    </main>
+</body>
+</html>

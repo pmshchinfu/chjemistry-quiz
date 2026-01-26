@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>化學反應式規範 - 物質狀態</title>
+    <style>
+        /* 同上頁 CSS 略作保持一致 */
+        body { font-family: sans-serif; display: flex; margin: 0; background: #f4f7f6; }
+        nav { width: 200px; background: #2c3e50; height: 100vh; padding: 20px; position: fixed; }
+        nav button { width: 100%; padding: 10px; margin-bottom: 10px; cursor: pointer; border: none; border-radius: 5px; background: #34495e; color: white; }
+        nav button:hover { background: #3498db; }
+        nav button.active { background: #3498db; font-weight: bold; }
+        main { margin-left: 240px; padding: 40px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #3498db; color: white; }
+    </style>
+</head>
+<body>
+    <nav>
+        <button onclick="location.href='page1.html'">1. 基本結構</button>
+        <button class="active" onclick="location.href='page2.html'">2. 物質狀態</button>
+        <button onclick="location.href='page3.html'">3. 反應條件</button>
+        <button onclick="location.href='page4.html'">4. 係數平衡</button>
+	<button onclick="location.href='quiz.html'">5. 互動練習</button>
+    </nav>
+    <main>
+        <h1>2. 物質狀態標記</h1>
+        <p>必須在化學式右下角的括號內標註狀態，以精確描述實驗情況：</p>
+        <table>
+            <tr><th>狀態名稱</th><th>英文術語</th><th>標記符號</th></tr>
+            <tr><td>固態</td><td>Solid</td><td><strong>(s)</strong></td></tr>
+            <tr><td>液態</td><td>Liquid</td><td><strong>(l)</strong></td></tr>
+            <tr><td>氣態</td><td>Gas</td><td><strong>(g)</strong></td></tr>
+            <tr><td>水溶液</td><td>Aqueous</td><td><strong>(aq)</strong></td></tr>
+        </table>
+    </main>
+</body>
+</html>
