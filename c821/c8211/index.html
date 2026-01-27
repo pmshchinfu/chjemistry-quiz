@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>化學式精熟練習 - 鍾青府老師</title>
+    <style>
+        :root { --primary: #2c3e50; --secondary: #3498db; --accent: #9b59b6; --bg: #f4f7f6; --success: #27ae60; --error: #e74c3c; }
+        body { font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; background: var(--bg); }
+        
+        /* 左側工具區 */
+        .sidebar-tools { width: 250px; background: var(--primary); padding: 25px; display: flex; flex-direction: column; gap: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); color: white; }
+        .sidebar-tools h3 { border-bottom: 2px solid #34495e; padding-bottom: 10px; text-align: center; }
+        .tool-btn { padding: 15px; font-size: 16px; background: var(--secondary); color: white; border: none; border-radius: 10px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .tool-btn:hover { background: #2980b9; transform: scale(1.02); }
+
+        /* 右側測驗區 */
+        .quiz-container { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        .card { background: white; width: 100%; max-width: 650px; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center; }
+        
+        /* 彈窗樣式 */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
+        .modal-content { position: relative; margin: 5% auto; width: 85%; max-width: 1000px; }
+        .modal-content img { width: 100%; border-radius: 10px; }
+
+        /* 題目與座號樣式 */
+        .no-split { display: flex; gap: 10px; align-items: center; justify-content: center; margin: 10px 0; }
+        .no-split select { width: 80px; padding: 8px; border-radius: 5px; }
+        .q-text { font-size: 36px; margin: 25px 0; font-weight: bold; color: #2c3e50; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .option-btn { padding: 15px; font-size: 18px; border: 2px solid var(--secondary); border-radius: 10px; background: white; cursor: pointer; transition: 0.2s; }
+        .option-btn:disabled { cursor: default; border-color: #ddd; color: #aaa; }
+        
+        /* 解析盒樣式 */
+        #explanation-box { display: none; margin-top: 20px; padding: 15px; border-radius: 10px; text-align: left; line-height: 1.6; }
+        .exp-correct { background: #e8f5e9; border: 1px solid var(--success); color: var(--success); }
+        .exp-wrong { background: #ffebee; border: 1px solid var(--error); color: var(--error); }
+
+        .progress-bar { width: 100%; background: #eee; height: 12px; border-radius: 6px; margin-bottom: 15px; overflow: hidden; }
+        #progress-fill { background: var(--secondary); height: 100%; width: 0%; transition: 0.3s; }
+        .sub { vertical-align: sub; font-size: 0.6em; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-tools">
+        <h3>🛠️ 輔助工具</h3>
+        <button class="tool-btn" onclick="openModal('modal-valence')">📊 元素價數地圖</button>
+        <button class="tool-btn" style="background:var(--accent);" onclick="openModal('modal-group')">📋 常用原子團表</button>
+        <hr style="width:100%; border:0; border-top:1px solid #34495e;">
+        <button class="tool-btn" style="background:#95a5a6;" onclick="location.href='../index.html'">🏠 回首頁</button>
+    </div>
+
+    <div class="quiz-container">
+        <div id="setup-ui" class="card">
+            <h2 style="color: var(--primary);">🧪 化學式精熟測驗 (100分制)</h2>
+            <div style="text-align:left; margin: 20px auto; max-width: 350px;">
+                <label>班級：</label>
+                <select id="user-class"><option value="801">801</option><option value="802">802</option><option value="803">803</option><option value="804">804</option><option value="805">805</option></select><br><br>
+                <label>座號：</label>
+                <div class="no-split">
+                    <div><small>十位數</small><br><select id="no-tens"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                    <div><small>個位數</small><br><select id="no-ones"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select></div>
+                </div><br>
+                <label>姓名：</label>
+                <input type="text" id="user-name" placeholder="輸入姓名">
+            </div>
+            <button onclick="startQuiz()" style="width:100%; padding:15px; background:var(--success); color:white; border:none; border-radius:8px; font-size:18px; cursor:pointer; font-weight:bold;">開始挑戰</button>
+        </div>
+
+        <div id="quiz-ui" class="card" style="display:none;">
+            <div class="progress-bar"><div id="progress-fill"></div></div>
+            <div id="q-info" style="font-weight:bold; color:var(--secondary);"></div>
+            <div class="q-text" id="q-content"></div>
+            <div class="options-grid" id="options-area"></div>
+            
+            <div id="explanation-box">
+                <div id="exp-title" style="font-weight:bold; margin-bottom:5px;"></div>
+                <div id="exp-content"></div>
+                <button onclick="goToNextQuestion()" style="margin-top:10px; padding:10px 25px; background:var(--secondary); color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">進入下一題</button>
+            </div>
+        </div>
+
+        <div id="result-ui" class="card" style="display:none;">
+            <h2>測驗結束</h2>
+            <h1 id="final-score" style="font-size:72px; color:var(--error);">0 分</h1>
+            <p id="user-data-display"></p>
+            <button onclick="location.reload()" style="padding:10px 20px; cursor:pointer; border-radius:5px;">重新挑戰</button>
+        </div>
+    </div>
+
+    <div id="modal-valence" class="modal" onclick="closeModal('modal-valence')"><div class="modal-content"><img src="Atomic_valence.jpg"></div></div>
+    <div id="modal-group" class="modal" onclick="closeModal('modal-group')"><div class="modal-content"><img src="atomic_group.jpg"></div></div>
+
+    <script>
+        const quizDB = [
+            // 1-10 題：每題 3 分
+            { q: "CH3COOH", opts: ["實驗式", "分子式", "結構式", "示性式"], ans: "示性式", exp: "示性式會表現出物質的官能基，COOH 為羧基，表示它是醋酸。", pts: 3 },
+            { q: "C6H12O6", opts: ["實驗式", "分子式", "結構式", "示性式"], ans: "分子式", exp: "分子式表現出分子中原子的實際種類與真實個數。", pts: 3 },
+            { q: "CH2O", opts: ["實驗式", "分子式", "結構式", "示性式"], ans: "實驗式", exp: "實驗式表示原子間的最簡單整數比。葡萄糖與甲醛的簡式均為 CH2O。", pts: 3 },
+            { q: "H-O-H", opts: ["實驗式", "分子式", "結構式", "示性式"], ans: "結構式", exp: "以短槓（價鍵）表示原子間鍵結情形的化學式稱為結構式。", pts: 3 },
+            { q: "C2H5OH", opts: ["實驗式", "分子式", "結構式", "示性式"], ans: "示性式", exp: "OH 基（羥基）表示它是酒精（乙醇），這屬於示性式的表達方式。", pts: 3 },
+            { q: "O=C=O", opts: ["實驗式", "分子式", "結構式", "示性式"], ans: "結構式", exp: "顯示出原子排列位置與單雙鍵關係，為結構式。", pts: 3 },
+            { q: "NH2", opts: ["實驗式", "分子式", "結構式", "示性式"], ans: "實驗式", exp: "聯胺(N2H4)的最簡整數比為 NH2，故為實驗式。", pts: 3 },
+            { q: "C2H4O2", opts: ["實驗式", "分子式", "結構式", "示性式"], ans: "分子式", exp: "這是醋酸的分子式，表現出所有原子的真實個數。", pts: 3 },
+            { q: "CH3OCH3", opts: ["實驗式", "分子式", "結構式", "示性式"], ans: "示性式", exp: "中間的 -O- (醚基)顯示了二甲醚的特性，為示性式。", pts: 3 },
+            { q: "C2H6", opts: ["實驗式", "分子式", "結構式", "示性式"], ans: "分子式", exp: "乙烷的真實原子個數，屬於分子式。", pts: 3 },
+
+            // 11-20 題：每題 4 分
+            { q: "硫酸鋁", opts: ["AlSO4", "Al2SO4", "Al2(SO4)3", "Al(SO4)2"], ans: "Al2(SO4)3", exp: "鋁離子為 +3，硫酸根為 -2，交叉相乘後為 Al2(SO4)3。", pts: 4 },
+            { q: "碳酸氫鈉 (小蘇打)", opts: ["Na2CO3", "NaHCO3", "NaOH", "NaH"], ans: "NaHCO3", exp: "鈉(+1)與碳酸氫根(-1)結合，形成 NaHCO3。", pts: 4 },
+            { q: "高錳酸鉀", opts: ["K2MnO4", "KMnO4", "KMn2O4", "K2MnO2"], ans: "KMnO4", exp: "鉀(+1)與高錳酸根(-1)結合。注意高錳酸根是紫色來源。", pts: 4 },
+            { q: "氫氧化鈣 (熟石灰)", opts: ["CaO", "CaOH", "Ca(OH)2", "Ca2OH"], ans: "Ca(OH)2", exp: "鈣(+2)與氫氧化根(-1)結合，原子團數量大於1時須加括號。", pts: 4 },
+            { q: "硝酸鉛", opts: ["PbNO3", "Pb2NO3", "Pb(NO3)2", "Pb(NO2)2"], ans: "Pb(NO3)2", exp: "鉛離子常見為 +2，硝酸根為 -1，故為 Pb(NO3)2。", pts: 4 },
+            { q: "氯化銨", opts: ["NH3Cl", "NH4Cl", "NH2Cl", "NCl"], ans: "NH4Cl", exp: "銨根(NH4+)是唯一的陽離子原子團，與氯離子結合成 NH4Cl。", pts: 4 },
+            { q: "鉻酸鉀", opts: ["KCrO4", "K2CrO4", "KCr2O7", "K2Cr2O7"], ans: "K2CrO4", exp: "鉻酸根為 CrO4(2-)，故需要兩個鉀離子平衡電荷。", pts: 4 },
+            { q: "重鉻酸鉀", opts: ["K2CrO4", "K2Cr2O7", "KCrO4", "KCr2O7"], ans: "K2Cr2O7", exp: "重鉻酸根(二鉻酸根)為 Cr2O7(2-)，顏色為橘紅色。", pts: 4 },
+            { q: "硫化氫", opts: ["HS", "H2S", "H2SO4", "H2SO3"], ans: "H2S", exp: "硫離子為 -2，氫離子為 +1，結合後為 H2S。", pts: 4 },
+            { q: "磷酸", opts: ["HPO4", "H2PO4", "H3PO4", "H3PO3"], ans: "H3PO4", exp: "磷酸根為 PO4(3-)，需要三個氫離子平衡。", pts: 4 },
+
+            // 21-30 題：每題 3 分
+            { q: "Na2CO3", opts: ["碳酸鈉 (蘇打)", "碳酸氫鈉", "氫氧化鈉", "氯化鈉"], ans: "碳酸鈉 (蘇打)", exp: "俗稱蘇打或洗滌鹼，易溶於水。", pts: 3 },
+            { q: "CaO", opts: ["碳酸鈣", "氫氧化鈣", "氧化鈣 (生石灰)", "硫酸鈣"], ans: "氧化鈣 (生石灰)", exp: "俗稱生石灰，與水反應會放出大量的熱。", pts: 3 },
+            { q: "HCl", opts: ["硫酸", "硝酸", "氫氯酸 (鹽酸)", "醋酸"], ans: "氫氯酸 (鹽酸)", exp: "氯化氫氣體的水溶液即為鹽酸。", pts: 3 },
+            { q: "H2O2", opts: ["水", "過氧化氫 (雙氧水)", "臭氧", "二氧化氫"], ans: "過氧化氫 (雙氧水)", exp: "實驗室製氧常用的試劑，加催化劑可分解。", pts: 3 },
+            { q: "CuSO4", opts: ["硫酸銅", "碳酸銅", "硝酸銅", "氯化銅"], ans: "硫酸銅", exp: "無水時為白色，遇水變藍色，常用於檢驗水的存在。", pts: 3 },
+            { q: "KNO3", opts: ["硝酸鉀", "亞硝酸鉀", "碳酸鉀", "硫酸鉀"], ans: "硝酸鉀", exp: "強氧化劑，常用於製造火藥。", pts: 3 },
+            { q: "NH3", opts: ["銨根", "氨氣", "硝酸", "氯化銨"], ans: "氨氣", exp: "具刺鼻臭味，易溶於水的弱鹼性氣體。", pts: 3 },
+            { q: "CH4", opts: ["乙烷", "甲烷", "丙烷", "二氧化碳"], ans: "甲烷", exp: "天然氣與沼氣的主要成分。", pts: 3 },
+            { q: "AgNO3", opts: ["硝酸銀", "硫酸銀", "碳酸銀", "氧化銀"], ans: "硝酸銀", exp: "照光易分解，須儲存於深色瓶中。", pts: 3 },
+            { q: "Mg(OH)2", opts: ["氧化鎂", "氫氧化鎂", "硫酸鎂", "碳酸鎂"], ans: "氫氧化鎂", exp: "常見的胃藥成分，具弱鹼性可中和胃酸。", pts: 3 }
+        ];
+
+        let currentQ = 0, score = 0, user = {}, details = [];
+        const script_url = "https://script.google.com/macros/s/AKfycbwNJQDZL80_9bmdG99dXHg6nd8SxWHElLTUD5kVncwX3H_mIwt7gW8RL4VGPmcdIPmAxQ/exec";
+
+        function openModal(id) { document.getElementById(id).style.display = "block"; }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
+        function startQuiz() {
+            const tens = document.getElementById('no-tens').value, ones = document.getElementById('no-ones').value;
+            user = { class: document.getElementById('user-class').value, no: parseInt(tens)*10+parseInt(ones), name: document.getElementById('user-name').value };
+            if(!user.name) return alert("請輸入姓名！");
+            document.getElementById('setup-ui').style.display='none';
+            document.getElementById('quiz-ui').style.display='block';
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = quizDB[currentQ];
+            document.getElementById('progress-fill').style.width = ((currentQ + 1) / 30) * 100 + "%";
+            document.getElementById('q-info').innerText = `第 ${currentQ + 1} / 30 題 (此題 ${q.pts} 分)`;
+            document.getElementById('q-content').innerHTML = q.q.replace(/(\d+)/g, '<span class="sub">$1</span>');
+            const area = document.getElementById('options-area'); area.innerHTML = "";
+            document.getElementById('explanation-box').style.display = "none";
+            
+            q.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = opt.replace(/(\d+)/g, '<span class="sub">$1</span>');
+                btn.onclick = () => checkAnswer(opt, btn);
+                area.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, btn) {
+            const q = quizDB[currentQ];
+            const box = document.getElementById('explanation-box');
+            document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+            
+            if (selected === q.ans) {
+                score += q.pts;
+                details.push(1); // 紀錄正確
+                document.getElementById('exp-title').innerText = "✅ 回答正確！";
+                box.className = "exp-correct";
+            } else {
+                details.push(0); // 紀錄錯誤
+                document.getElementById('exp-title').innerText = "❌ 回答錯誤...";
+                box.className = "exp-wrong";
+            }
+            document.getElementById('exp-content').innerHTML = `正確答案為：<b>${q.ans}</b><br><small>${q.exp}</small>`;
+            box.style.display = "block";
+        }
+
+        function goToNextQuestion() {
+            currentQ++;
+            if (currentQ < 30) loadQuestion(); else finish();
+        }
+
+        function finish() {
+            document.getElementById('quiz-ui').style.display='none';
+            document.getElementById('result-ui').style.display='block';
+            document.getElementById('final-score').innerText = score + " 分";
+            document.getElementById('user-data-display').innerText = `${user.name} (${user.class}班 ${user.no}號)`;
+            
+            // 傳送完整資料至試算表
+            const finalDetails = details.join(",");
+            const params = `class=${user.class}&no=${user.no}&name=${encodeURIComponent(user.name)}&score=${score}&details=${finalDetails}`;
+            
+            fetch(`${script_url}?${params}`, { method: 'POST', mode: 'no-cors' });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>化學反應式規範 - 反應條件</title>
+    <style>
+        body { font-family: sans-serif; display: flex; margin: 0; background: #f4f7f6; }
+        nav { width: 200px; background: #2c3e50; height: 100vh; padding: 20px; position: fixed; }
+        nav button { width: 100%; padding: 10px; margin-bottom: 10px; cursor: pointer; border: none; border-radius: 5px; background: #34495e; color: white; }
+        nav button:hover { background: #9b59b6; }
+        nav button.active { background: #9b59b6; font-weight: bold; }
+        main { margin-left: 240px; padding: 40px; }
+        .card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <nav>
+<div class="sidebar">
+    <button class="lecture-btn" onclick="window.open('c8212_Lecture_notes.pdf', '_blank')">📄 講義</button>
+    <hr><button onclick="location.href='index.html'">1. 基本結構</button>
+    <button onclick="location.href='page2.html'">2. 物質狀態</button>
+    <button onclick="location.href='page3.html'">3. 反應條件</button>
+    <button onclick="location.href='page4.html'">4. 係數平衡</button>
+    <button onclick="location.href='quiz.html'">5. 互動練習</button>
+    <hr> <button class="back-btn" onclick="location.href='../index.html'">🏠 回章節首頁</button>
+</div>
+    </nav>
+    <main>
+        <h1>3. 反應條件與特殊標號</h1>
+        <div class="card"><strong>加熱：</strong> 在箭頭上方加上三角形符號「Δ」。</div>
+        <div class="card"><strong>催化劑：</strong> 寫在箭頭的上方或下方（例如：MnO₂）。</div>
+        <div class="card"><strong>氣體產生：</strong> 若產物中有氣體，可在化學式後加上「<strong>↑</strong>」。</div>
+        <div class="card"><strong>沉澱產生：</strong> 若產物中有固體沉澱，可在化學式後加上「<strong>↓</strong>」。</div>
+    </main>
+</body>
+</html>
