@@ -43,13 +43,20 @@
 </head>
 <body>
 
-    <div class="sidebar-tools">
-        <h3>🛠️ 輔助工具</h3>
-        <button class="tool-btn" onclick="openModal('modal-valence')">📊 元素價數地圖</button>
-        <button class="tool-btn" style="background:var(--accent);" onclick="openModal('modal-group')">📋 常用原子團表</button>
-        <hr style="width:100%; border:0; border-top:1px solid #34495e;">
-        <button class="tool-btn" style="background:#95a5a6;" onclick="location.href='../index.html'">🏠 回首頁</button>
-    </div>
+<div class="sidebar-tools">  
+    
+    <button class="tool-btn" style="background:#e67e22;" onclick="window.open('chemical_formula_rules.pdf.pdf', '_blank')">📄 講義：化學反應式規範</button>
+    <button class="tool-btn" style="background:#d35400;" onclick="window.open('typesOfchemical_formula.pdf', '_blank')">📄 講義：化學式種類</button>
+    
+    <hr style="width:100%; border:0; border-top:1px solid #34495e;">
+    <h3>🛠️ 輔助工具</h3>    
+    <button class="tool-btn" onclick="openModal('modal-valence')">📊 元素價數地圖</button>
+    <button class="tool-btn" style="background:var(--accent);" onclick="openModal('modal-group')">📋 常用原子團表</button>
+    
+    <hr style="width:100%; border:0; border-top:1px solid #34495e;">
+    
+    <button class="tool-btn" style="background:#95a5a6;" onclick="location.href='../index.html'">🏠 回章節首頁</button>
+</div>
 
     <div class="quiz-container">
         <div id="setup-ui" class="card">
