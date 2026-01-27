@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>質量守恆定律 - 鍾青府老師</title>
+    <style>
+        :root { --primary: #2980b9; --success: #27ae60; --error: #e74c3c; --dark: #2c3e50; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; display: flex; }
+        .sidebar { width: 220px; background: var(--dark); padding: 25px 15px; height: 100vh; position: fixed; display: flex; flex-direction: column; gap: 15px; }
+        .sidebar-title { color: white; font-size: 1.2em; text-align: center; margin-bottom: 20px; border-bottom: 1px solid #455a64; padding-bottom: 10px; }
+        .sidebar button { padding: 15px; color: white; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: bold; font-size: 16px; text-align: center; }
+        .btn-lecture { background: #9b59b6; }
+        .btn-quiz { background: var(--success); }
+        .btn-home { background: #e67e22; margin-top: auto; }
+        .main-content { margin-left: 250px; padding: 40px; flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
+        .card { background: white; width: 100%; max-width: 650px; padding: 40px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); text-align: center; }
+        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
+        select, input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .seat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .question-text { font-size: 22px; margin: 25px 0; text-align: left; line-height: 1.5; }
+        .options-grid { display: grid; gap: 12px; }
+        .option-btn { padding: 15px; font-size: 18px; border: 2px solid #ddd; border-radius: 10px; background: white; cursor: pointer; text-align: left; }
+        #feedback-box { display: none; margin-top: 20px; padding: 20px; border-radius: 10px; text-align: left; }
+        .fb-correct { background: #d4edda; border: 2px solid #28a745; color: #155724; }
+        .fb-wrong { background: #f8d7da; border: 2px solid #dc3545; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-title">質量守恆定律</div>
+        <button class="btn-lecture" onclick="window.open('Conservation_of_mass.pdf', '_blank')">📄 閱讀講義</button>
+        <button class="btn-quiz" onclick="location.reload()">✍️ 重新測驗</button>
+        <button class="btn-home" onclick="location.href='../index.html'">🏠 回首頁</button>
+    </div>
+
+    <div class="main-content">
+        <div id="login-box" class="card">
+            <h2>🧪 質量守恆精熟測驗</h2>
+            <div class="form-group">
+                <label>班級：</label>
+                <select id="class-select">
+                    <option value="">請選擇班級</option>
+                    <option value="801">801</option><option value="802">802</option>
+                    <option value="803">803</option><option value="804">804</option><option value="805">805</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>座號：</label>
+                <div class="seat-grid">
+                    <select id="seat-ten">
+                        <option value="0">0 (十位)</option>
+                        <option value="1">1</option><option value="2">2</option>
+                        <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                    </select>
+                    <select id="seat-one">
+                        <option value="">(個位)</option>
+                        <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                        <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                        <option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>姓名：</label>
+                <input type="text" id="name-input" placeholder="請輸入姓名">
+            </div>
+            <button onclick="startQuiz()" style="width:100%; padding:15px; background:var(--success); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">開始測驗</button>
+        </div>
+
+        <div id="quiz-box" class="card" style="display:none;">
+            <div id="q-header" style="color:var(--primary); font-weight:bold;"></div>
+            <div id="q-text" class="question-text"></div>
+            <div id="q-options" class="options-grid"></div>
+            <div id="feedback-box">
+                <div id="fb-title" style="font-weight:bold; font-size:1.1em;"></div>
+                <div id="fb-text" style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(0,0,0,0.1);"></div>
+                <button onclick="nextQ()" style="margin-top:15px; padding:10px 30px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer;">下一題</button>
+            </div>
+        </div>
+
+        <div id="result-box" class="card" style="display:none;">
+            <h2>測驗完成</h2>
+            <h1 id="score-display" style="font-size:72px; color:var(--error);">0 分</h1>
+            <p id="upload-status" style="font-weight:bold; color:var(--primary);">資料自動登錄中...</p>
+            <button onclick="location.reload()" style="margin-top:20px; padding:12px 25px; border-radius:8px; cursor:pointer;">返回</button>
+        </div>
+    </div>
+
+    <script>
+        const script_url = "https://script.google.com/macros/s/AKfycbzXkjCD4jdQRzLPrfYahplJ4PaNQi42_glFiugwvO9VCoydokImjFq01yGyl76QxkQ/exec"; 
+
+        const questions = [
+            { q: "十八世紀確立「質量守恆定律」的科學家是誰？", o: ["道耳頓", "拉瓦節", "莫耳", "阿佛加德羅"], a: 1, e: "拉瓦節透過精密天平實驗確立了化學反應前後總質量不變。" },
+            { q: "在一般化學反應中，參與反應的所有物質總質量會如何？", o: ["增加", "減少", "維持恆定", "不一定"], a: 2, e: "根據質量守恆定律，反應物總質量必等於生成物總質量。" },
+            { q: "化學反應前後原子的種類與數目不變，是引用哪一個理論？", o: ["原子說", "相對論", "萬有引力", "細胞學說"], a: 0, e: "道耳頓原子說指出原子不會消失，只是重新排列組合。" },
+            { q: "化學反應前後，下列哪一項「絕對不會」改變？", o: ["分子的種類", "物質的總質量", "原子排列方式", "物質性質"], a: 1, e: "原子的庫存沒變，因此總質量絕對守恆。" },
+            { q: "化學反應前後，下列哪一項「一定會」改變？", o: ["原子個數", "原子種類", "物質種類", "元素種類"], a: 2, e: "化學反應的本質是產生與原物質性質不同的新物質。" },
+            { q: "開放容器中大理石加鹽酸反應後秤重變輕，是因為？", o: ["定律出錯", "二氧化碳氣體逸散", "產生新原子", "大理石消失"], a: 1, e: "氣體產物逸散到空氣中，導致天平測不到該份質量。" },
+            { q: "鋼絲絨燃燒後質量增加，原因為何？", o: ["產生新原子", "吸收了空氣中的氧氣", "熱量轉為質量", "天平故障"], a: 1, e: "氧氣結合到固體中，增加了產物的總重量。" },
+            { q: "若要精準驗證反應前後質量相等，應優先選擇哪種環境？", o: ["開放系統", "密閉系統", "加熱系統", "真空系統"], a: 1, e: "密閉系統能有效防止物質與外界交換。" },
+            { q: "關於質量守恆，反應前後原子的種類與數目關係為何？", o: ["種類變，數目變", "種類不變，數目變", "種類變，數目不變", "種類不變，數目不變"], a: 3, e: "原子種類與個數保持不變，是質量守恆的微觀原因。" },
+            { q: "關於質量守恆定律的敘述，下列何者「錯誤」？", o: ["適用於沉澱反應", "適用於燃燒反應", "核分裂反應也完全符合", "開放系統中定律仍成立"], a: 2, e: "核反應中質量會轉化為能量，不適用傳統質量守恆定律。" }
+        ];
+
+        let currentIdx = 0, score = 0, user = {}, detailLog = [];
+
+        function startQuiz() {
+            const cls = document.getElementById('class-select').value;
+            const ten = document.getElementById('seat-ten').value;
+            const one = document.getElementById('seat-one').value;
+            const name = document.getElementById('name-input').value;
+            if(!cls || one === "" || !name) return alert("請完整填寫資訊！");
+            user = { class: cls, no: (parseInt(ten)*10 + parseInt(one)).toString().padStart(2, '0'), name: name };
+            document.getElementById('login-box').style.display='none';
+            document.getElementById('quiz-box').style.display='block';
+            loadQ();
+        }
+
+        function loadQ() {
+            const q = questions[currentIdx];
+            document.getElementById('q-header').innerText = `進度：${currentIdx+1} / 10`;
+            document.getElementById('q-text').innerText = q.q;
+            const area = document.getElementById('q-options');
+            area.innerHTML = "";
+            document.getElementById('feedback-box').style.display = "none";
+            q.o.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = `${String.fromCharCode(65+i)}. ${opt}`;
+                btn.onclick = () => check(i);
+                area.appendChild(btn);
+            });
+        }
+
+        function check(idx) {
+            const q = questions[currentIdx], fb = document.getElementById('feedback-box');
+            document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+            fb.style.display = "block";
+            if(idx === q.a) {
+                score += 10;
+                detailLog.push("對");
+                document.getElementById('fb-title').innerText = "✅ 回答正確";
+                fb.className = "fb-correct";
+            } else {
+                detailLog.push("錯");
+                document.getElementById('fb-title').innerText = "❌ 回答錯誤";
+                fb.className = "fb-wrong";
+            }
+            document.getElementById('fb-text').innerHTML = `<b>正確答案：${String.fromCharCode(65+q.a)}</b><br>解析：${q.e}`;
+        }
+
+        function nextQ() {
+            if(++currentIdx < questions.length) loadQ();
+            else upload();
+        }
+
+function upload() {
+    document.getElementById('quiz-box').style.display = 'none';
+    document.getElementById('result-box').style.display = 'block';
+    document.getElementById('score-display').innerText = score + " 分";
+    
+    // 使用 URLSearchParams 確保參數編碼正確，解決亂碼或無法紀錄的問題
+    const params = new URLSearchParams({
+        class: user.class,
+        no: user.no,
+        name: user.name,
+        score: score,
+        details: detailLog.join(",")
+    });
+
+    const finalUrl = `${script_url}?${params.toString()}`;
+
+    // 使用 GET 模式發送
+    fetch(finalUrl, { method: 'GET', mode: 'no-cors' })
+    .then(() => { 
+        document.getElementById('upload-status').innerText = "✅ 成績與明細已成功記錄";
+        document.getElementById('upload-status').style.color = "#27ae60";
+    })
+    .catch((err) => {
+        console.error(err);
+        document.getElementById('upload-status').innerText = "❌ 上傳失敗，請檢查網路";
+        document.getElementById('upload-status').style.color = "#e74c3c";
+    });
+}
+    </script>
+</body>
+</html>
