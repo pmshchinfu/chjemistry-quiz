@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原子量、分子量、莫耳 - 鍾青府老師</title>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root { --primary: #2980b9; --success: #27ae60; --error: #e74c3c; --dark: #2c3e50; --bg: #f4f7f6; --banner: #34495e; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; }
+        .header-banner { background: var(--banner); color: white; padding: 20px; text-align: center; position: fixed; width: 100%; top: 0; z-index: 1000; }
+        .header-banner h1 { margin: 0; letter-spacing: 5px; font-size: 24px; }
+        .container { display: flex; margin-top: 70px; }
+        .sidebar { width: 220px; background: var(--dark); padding: 25px 15px; height: calc(100vh - 70px); position: fixed; top: 70px; display: flex; flex-direction: column; gap: 15px; }
+        .sidebar button { padding: 15px; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        .sidebar button.active { background: var(--primary); border: 2px solid #fff; }
+        .main-content { margin-left: 250px; padding: 40px; flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
+        .quiz-card { background: white; width: 100%; max-width: 650px; padding: 35px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); text-align: center; }
+        .form-group { text-align: left; margin-bottom: 20px; }
+        select, input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        .seat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .question-text { font-size: 22px; margin: 25px 0; text-align: left; line-height: 1.6; }
+        .options-grid { display: grid; gap: 12px; }
+        .option-btn { padding: 15px; font-size: 18px; border: 2px solid #ddd; border-radius: 10px; background: white; cursor: pointer; text-align: left; }
+        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #f0f7ff; }
+        #feedback-box { display: none; margin-top: 20px; padding: 20px; border-radius: 10px; text-align: left; }
+        .fb-correct { background: #d4edda; border: 2px solid #28a745; color: #155724; }
+        .fb-wrong { background: #f8d7da; border: 2px solid #dc3545; color: #721c24; }
+        .calc-area { background: #fdf6e3; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 5px solid #b58900; }
+        .calc-input { width: 80px; text-align: center; border: 1px solid #999; border-radius: 4px; padding: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="header-banner"><h1>原子量、分子量、莫耳</h1></div>
+
+    <div class="container">
+        <div class="sidebar">
+            <button style="background:#9b59b6;" onclick="window.open('Atomic_molecular.pdf', '_blank')">📄 閱讀講義</button>
+            <button class="active" onclick="location.reload()">✍️ 線上測驗</button>
+            <button style="background:#e67e22; margin-top: auto;" onclick="location.href='../index.html'">🏠 回首頁</button>
+        </div>
+
+        <div class="main-content">
+            <div id="login-box" class="quiz-card">
+                <h2>🧪 評量資訊登錄</h2>
+                <div class="form-group"><label>班級：</label>
+                    <select id="user-class">
+                        <option value="">選擇班級</option>
+                        <option value="801">801</option><option value="802">802</option>
+                        <option value="803">803</option><option value="804">804</option><option value="805">805</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>座號：</label>
+                    <div class="seat-grid">
+                        <select id="no-ten"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+                        <select id="no-one"><option value="">個位</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select>
+                    </div>
+                </div>
+                <div class="form-group"><label>姓名：</label><input type="text" id="user-name" placeholder="輸入姓名"></div>
+                <button onclick="startQuiz()" style="width:100%; padding:15px; background:var(--success); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">進入測驗</button>
+            </div>
+
+            <div id="quiz-box" class="quiz-card" style="display:none;">
+                <div id="q-header" style="color:var(--primary); font-weight:bold;"></div>
+                <div id="q-content"></div>
+                <div id="feedback-box">
+                    <div id="fb-title" style="font-weight:bold;"></div>
+                    <div id="fb-text"></div>
+                    <button onclick="nextQ()" style="margin-top:15px; padding:10px 25px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer;">下一題</button>
+                </div>
+            </div>
+
+            <div id="result-box" class="quiz-card" style="display:none;">
+                <h2>評量完成</h2>
+                <h1 id="score-display" class="score-box" style="font-size:72px; color:var(--error);">0</h1>
+                <p id="upload-status">成績登錄中...</p>
+                <button onclick="location.reload()">重新測驗</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const script_url = "https://script.google.com/macros/s/AKfycbxbTfbQYeKSv_0oi_g8DBYF9g4K0cnOHePfhnFAjInMW8g0tYn6kTJNGarJ_0EL4jdn/exec";
+    
+    const questions = [
+        // 觀念題 (1-10)
+        {type:"radio", q:"關於原子量的敘述，何者正確？", o:["原子量有單位(g)","原子量是真實質量","目前以碳-12為比較標準","原子量由碳原子真實質量定義"], a:2, e:"原子量是相對比較的數值，目前以碳-12=12.0000為標準。"},
+        {type:"radio", q:"1 莫耳的物質所含的粒子數大約是多少個？", o:["\\(6 \\times 10^{22}\\)","\\(6 \\times 10^{23}\\)","\\(1.2 \\times 10^{23}\\)","\\(3 \\times 10^{23}\\)"], a:1, e:"1 莫耳定義為 \\(6 \\times 10^{23}\\) 個粒子。"},
+        {type:"radio", q:"已知碳原子量為 12，則 12 公克的碳原子中含有多少個碳原子？", o:["12 個","\\(6 \\times 10^{23}\\) 個","1 個","\\(1.2 \\times 10^{24}\\) 個"], a:1, e:"12公克即 1 莫耳碳，含亞佛加德羅數個原子。"},
+        {type:"radio", q:"下列何者代表「分子量」？", o:["1 個分子的質量","1 莫耳分子的質量(g)在數值上的展現","分子的密度","分子的體積"], a:1, e:"分子量在數值上等於 1 莫耳物質的質量。"},
+        {type:"radio", q:"若氧原子量由 16 變 32，則 1 莫耳氧氣 (\\(O_2\\)) 的「真實」質量？", o:["變重","變輕","不變","變兩倍"], a:2, e:"人為定義改變不會影響真實物理質量。"},
+        {type:"radio", q:"1 莫耳二氧化碳 (\\(CO_2\\)) 含有多少莫耳氧原子？", o:["1","2","3","44"], a:1, e:"一個 \\(CO_2\\) 有兩個氧原子。"},
+        {type:"radio", q:"0.5 莫耳水分子 (\\(H_2O\\)) 中含有幾莫耳原子？", o:["0.5","1","1.5","3"], a:2, e:"\\(0.5 \\times 3 = 1.5\\) 莫耳原子。"},
+        {type:"radio", q:"莫耳 (mole) 是哪一種物理量的單位？", o:["質量","重量","粒子數量","密度"], a:2, e:"莫耳是計算數量的單位。"},
+        {type:"radio", q:"18 公克水 (\\(H_2O\\)) 與 18 公克二氧化碳 (\\(CO_2\\)) 誰分子數多？", o:["水分子較多","二氧化碳分子較多","一樣多","無法比較"], a:0, e:"同樣質量下，分子量越小分子數越多。"},
+        {type:"radio", q:"原子量是由科學家協議訂出的「相對」數值，對嗎？", o:["對","不對"], a:0, e:"是的。"},
+
+        // 分子量填空 (11-15)
+        {type:"mw", q:"計算 二氧化碳 (\\(CO_2\\)) 分子量：", s:"12 + 16 \\(\\times\\) ", sa:2, ans:44, e:"\\(C=12, O=16 \\times 2\\)。"},
+        {type:"mw", q:"計算 水 (\\(H_2O\\)) 分子量：", s:"1 \\(\\times\\) 2 +", sa:16, ans:18, e:"\\(H=1 \\times 2, O=16\\)。"},
+        {type:"mw", q:"計算 氫氧化鈉 (NaOH) 分子量：", s:"23 + 16 +", sa:1, ans:40, e:"Na=23, O=16, H=1。"},
+        {type:"mw", q:"計算 硫酸 (\\(H_2SO_4\\)) 分子量：", s:"1 \\(\\times\\) 2 + 32 + 16 \\(\\times\\) ", sa:4, ans:98, e:"H=2, S=32, O=64。"},
+        {type:"mw", q:"計算 葡萄糖 (\\(C_6H_{12}O_6\\)) 分子量：", s:"12 \\(\\times\\) 6 + 1 \\(\\times\\) 12 + 16 \\(\\times\\) ", sa:6, ans:180, e:"12x6 + 1x12 + 16x6。"},
+
+        // 莫耳轉換 (16-25)
+        {type:"mole", q:"已知 36 公克 水 (\\(H_2O=18\\))", l:["莫耳數","數量 (\\(\\times 6 \\times 10^{23}\\))"], a:[2,2], e:"36 / 18 = 2 莫耳。"},
+        {type:"mole", q:"已知 88 公克 二氧化碳 (\\(CO_2=44\\))", l:["莫耳數","數量 (\\(\\times 6 \\times 10^{23}\\))"], a:[2,2], e:"88 / 44 = 2 莫耳。"},
+        {type:"mole", q:"已知 4 公克 氫氣 (\\(H_2=2\\))", l:["莫耳數","數量 (\\(\\times 6 \\times 10^{23}\\))"], a:[2,2], e:"4 / 2 = 2 莫耳。"},
+        {type:"mole", q:"已知 160 公克 氧化鐵 (\\(Fe_2O_3=160\\))", l:["莫耳數","數量 (\\(\\times 6 \\times 10^{23}\\))"], a:[1,1], e:"1 莫耳。"},
+        {type:"mole", q:"已知 2 莫耳 氧氣 (\\(O_2=32\\))", l:["質量 (g)","數量 (\\(\\times 6 \\times 10^{23}\\))"], a:[64,2], e:"2 \\(\times\\) 32 = 64g。"},
+        {type:"mole", q:"已知 0.5 莫耳 硫酸 (\\(H_2SO_4=98\\))", l:["質量 (g)","數量 (\\(\\times 6 \\times 10^{23}\\))"], a:[49,0.5], e:"0.5 \\(\times\\) 98 = 49g。"},
+        {type:"mole", q:"已知 3 莫耳 碳原子 (C=12)", l:["質量 (g)","數量 (\\(\\times 6 \\times 10^{23}\\))"], a:[36,3], e:"3 \\(\times\\) 12 = 36g。"},
+        {type:"mole", q:"已知 \\(1.2 \\times 10^{24}\\) 個 水分子 (\\(H_2O=18\\))", l:["莫耳數","質量 (g)"], a:[2,36], e:"2 莫耳水。"},
+        {type:"mole", q:"已知 \\(3 \\times 10^{23}\\) 個 氫氣 (\\(H_2=2\\))", l:["莫耳數","質量 (g)"], a:[0.5,1], e:"0.5 莫耳氫氣。"},
+        {type:"mole", q:"已知 \\(6 \\times 10^{24}\\) 個 碳原子 (C=12)", l:["莫耳數","質量 (g)"], a:[10,120], e:"10 莫耳碳。"}
+    ];
+
+    let currentIdx = 0, score = 0, user = {}, detailLog = [];
+
+    function startQuiz() {
+        const cls = document.getElementById('user-class').value;
+        const ten = document.getElementById('no-ten').value;
+        const one = document.getElementById('no-one').value;
+        const name = document.getElementById('user-name').value;
+        if(!cls || one === "" || !name) return alert("資訊不完整！");
+        user = { class: cls, no: (parseInt(ten)*10 + parseInt(one)).toString().padStart(2, '0'), name: name };
+        document.getElementById('login-box').style.display='none';
+        document.getElementById('quiz-box').style.display='block';
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const q = questions[currentIdx], area = document.getElementById('q-content'), head = document.getElementById('q-header');
+        document.getElementById('feedback-box').style.display = "none";
+        head.innerText = `題目進度：${currentIdx+1} / ${questions.length}`;
+        let html = `<div class="question-text">${q.q}</div>`;
+
+        if(q.type === "radio") {
+            html += `<div class="options-grid">`;
+            q.o.forEach((opt, i) => html += `<button class="option-btn" onclick="checkRadio(${i})">${String.fromCharCode(65+i)}. ${opt}</button>`);
+            html += `</div>`;
+        } else if(q.type === "mw") {
+            html += `<div class="calc-area">步驟：${q.s} <input type="number" id="ans-s" class="calc-input"></div>`;
+            html += `最終答案：<input type="number" id="ans-a" class="calc-input">`;
+            html += `<br><button class="option-btn" style="margin-top:15px; width:100%; text-align:center;" onclick="checkCalc()">檢查答案</button>`;
+        } else if(q.type === "mole") {
+            html += `<div class="calc-area">${q.l[0]}：<input type="number" id="ans-1" class="calc-input"><br><br>${q.l[1]}：<input type="number" id="ans-2" class="calc-input"></div>`;
+            html += `<button class="option-btn" style="width:100%; text-align:center;" onclick="checkMole()">檢查答案</button>`;
+        }
+        area.innerHTML = html;
+        if (window.MathJax) MathJax.typesetPromise();
+    }
+
+    function showFB(isCorrect, text) {
+        const fb = document.getElementById('feedback-box');
+        fb.style.display = "block";
+        fb.className = isCorrect ? "fb-correct" : "fb-wrong";
+        document.getElementById('fb-title').innerText = isCorrect ? "✅ 回答正確" : "❌ 回答錯誤";
+        document.getElementById('fb-text').innerHTML = text;
+        detailLog.push(isCorrect ? "對" : "錯");
+        if(isCorrect) score += (currentIdx < 10 ? 3 : (currentIdx < 15 ? 4 : 5));
+        document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+        if (window.MathJax) MathJax.typesetPromise();
+    }
+
+    function checkRadio(idx) {
+        const q = questions[currentIdx];
+        showFB(idx === q.a, `正確答案：${String.fromCharCode(65+q.a)}<br>解析：${q.e}`);
+    }
+
+    function checkCalc() {
+        const q = questions[currentIdx], s = parseFloat(document.getElementById('ans-s').value), a = parseFloat(document.getElementById('ans-a').value);
+        showFB(s === q.sa && a === q.ans, `正確：步驟填入 ${q.sa}，分子量為 ${q.ans}`);
+    }
+
+    function checkMole() {
+        const q = questions[currentIdx], v1 = parseFloat(document.getElementById('ans-1').value), v2 = parseFloat(document.getElementById('ans-2').value);
+        showFB(v1 === q.a[0] && v2 === q.a[1], `正確：${q.l[0]}=${q.a[0]}, ${q.l[1]}=${q.a[1]}`);
+    }
+
+    function nextQ() {
+        if(++currentIdx < questions.length) loadQuestion();
+        else upload();
+    }
+
+    function upload() {
+        document.getElementById('quiz-box').style.display='none';
+        document.getElementById('result-box').style.display='block';
+        document.getElementById('score-display').innerText = score;
+        const params = new URLSearchParams({ class: user.class, no: user.no, name: user.name, score: score, details: detailLog.join(",") });
+        fetch(`${script_url}?${params.toString()}`, { method: 'GET', mode: 'no-cors' })
+        .then(() => document.getElementById('upload-status').innerText = "✅ 成績已登錄");
+    }
+</script>
+</body>
+</html>
