@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>化學科競賽 - 最終完整版</title>
+    <title>高雄市自然科學競賽 - 化學科完整練習</title>
     <style>
         body { font-family: "Microsoft JhengHei", sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; color: #333; }
         .card { background: white; width: 100%; max-width: 700px; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
@@ -23,8 +23,9 @@
         #submit-btn { background: #2196f3; color: white; }
         #next-btn { background: #4caf50; color: white; display: none; }
         textarea { width: 100%; height: 100px; padding: 15px; border-radius: 10px; border: 2px solid #e0e0e0; font-size: 1rem; box-sizing: border-box; }
-        sub { font-size: 0.8em; }
-        sup { font-size: 0.8em; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background: #fff; }
+        table, th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        sub, sup { font-size: 0.75em; }
     </style>
 </head>
 <body>
@@ -33,7 +34,7 @@
     <div class="progress-bar"><div class="progress-fill" id="p-fill"></div></div>
     <div id="quiz-box">
         <div class="question-num" id="q-num">Question</div>
-        <div class="question-text" id="q-text">準備中...</div>
+        <div class="question-text" id="q-text">載入中...</div>
         <div id="input-area"></div>
         <div id="feedback"><strong id="stat"></strong><div class="explanation" id="expl"></div></div>
         <div class="action-area">
@@ -45,48 +46,78 @@
 
 <script>
     const quizData = [
-        // 選擇題部分 (1-34)
-        { num: "1", type: "multi", text: "各平衡反應受擾動因素影響後，有關平衡移動方向，何者正確？ [cite: 12]", options: ["(A) N<sub>2</sub>O<sub>4</sub> ⇌ 2NO<sub>2</sub>：相同的容器加入 NO<sub>2(g)</sub>，平衡向右 [cite: 13]", "(B) Br<sub>2</sub>+H<sub>2</sub>O ⇌ H<sup>+</sup>+Br<sup>-</sup>+HBrO，加入鹼，平衡向右 [cite: 14]", "(C) Cl<sub>2</sub>+H<sub>2</sub>O ⇌ H<sup>+</sup>+Cl<sup>-</sup>+HClO，加入酸，平衡向左 [cite: 15]", "(D) C+CO<sub>2</sub> ⇌ 2CO，加入CO，平衡不移動 [cite: 16]"], answer: ["B", "C"], expl: "根據勒沙特列原理，系統會往抵消擾動的方向移動 [cite: 12]。(B)加入鹼與H<sup>+</sup>中和，濃度降低平衡向右 [cite: 14]；(C)增加H<sup>+</sup>濃度平衡向左 [cite: 15]。" },
-        { num: "2", type: "multi", text: "欲配製重量百分率濃度為10%的糖水，下列敘述何者正確？ [cite: 17]", options: ["(A)取20%糖水蒸發使質量減半，可得10%糖水 [cite: 18]", "(B)取20%糖水和等質量的水均勻混合，可得10%糖水 [cite: 19]", "(C)取20%糖水分成兩杯則濃度不變 [cite: 20]", "(D)取10公克糖溶於100公克水中，得濃度小於10%糖水 [cite: 21]"], answer: ["B", "C", "D"], expl: "(B)稀釋公式：20% × M = 10% × 2M，正確 [cite: 19]。(D)10/(10+100) = 9.09% < 10% [cite: 21]。" },
-        { num: "3", type: "multi", text: "有關化學反應式的敘述，下列何者正確？ [cite: 22]", options: ["(A)表示實際發生的反應，不能憑空杜撰 [cite: 23]", "(B)用「→」表示化學反應的方向 [cite: 24]", "(C)化學反應式即化學式 [cite: 25]", "(D)左、右兩邊分子數目須相等 [cite: 26]"], answer: ["A", "B"], expl: "反應式須符合實驗事實 [cite: 23]。依質量守恆定律，須相等的是「原子數目」而非分子數目 [cite: 26, 51]。" },
-        { num: "4", type: "single", text: "2A+B → 2R，a公克A與b公克B完全反應生成r公克R，則何者正確？ [cite: 27]", options: ["(A) 2a+b=2r", "(B) a/2+b=r/2", "(C) a+b=r [cite: 31]", "(D) a+b=2r"], answer: ["C"], expl: "依質量守恆定律，反應物總質量(a+b)等於產物總質量(r) [cite: 27, 31]。" },
-        { num: "5", type: "multi", text: "將鋼板鍍上一層鋅防鏽，敘述何者正確？ [cite: 33]", options: ["(A)鋅對氧活性比鐵大，易被氧化 [cite: 34]", "(B)鋅氧化物結構緊密，能隔離鐵與氧 [cite: 35]", "(C)鋅能與鐵形成合金降低活性 [cite: 36]", "(D)鋅活性比鐵小 [cite: 37]"], answer: ["A", "B"], expl: "鋅活性大於鐵，但其生成的氧化鋅層結構緻密可保護內部鐵質 [cite: 34, 35]。" },
-        { num: "6", type: "multi", text: "鎂帶與銅箔加熱，敘述何者正確？ [cite: 38]", options: ["(A)兩者均會燃燒", "(B)鎂火焰強烈白光，銅不燃燒 [cite: 40]", "(C)兩者均發生氧化反應 [cite: 41]", "(D)兩者氧化產物極易溶於水"], answer: ["B", "C"], expl: "鎂在空氣中劇烈燃燒產生強光 [cite: 40]，銅僅緩慢氧化變黑且氧化銅不溶於水 [cite: 38, 41]。" },
-        { num: "7", type: "multi", text: "手工香皂製造敘述何者正確？ [cite: 44]", options: ["(A)加入乙醇溶解回鍋油 [cite: 45]", "(B)加入氫氧化鈉進行皂化 [cite: 46]", "(C)酒精使反應加速 [cite: 47]", "(D)加入飽和食鹽水促使香皂析出 [cite: 48]"], answer: ["A", "B", "C", "D"], expl: "酒精作為溶劑增加接觸面積 [cite: 45, 47]，飽和食鹽水用於鹽析分離肥皂 [cite: 48]。" },
-        { num: "8", type: "single", text: "化學變化發生前後，下列敘述何者錯誤？ [cite: 50]", options: ["(A)原子總數不變 [cite: 51]", "(B)分子總數不變，性質改變 [cite: 52]", "(C)原子、分子數都改變 [cite: 53]", "(D)原子總數改變 [cite: 54]"], answer: ["B", "C", "D"], expl: "化學反應中原子種類與總數絕對不變，分子數則不一定 [cite: 51, 53]。" },
-        { num: "9", type: "multi", text: "下列有關有機/無機化合物敘述何者正確？ [cite: 55]", options: ["(A)無機化合物不只存在於礦物中 [cite: 56]", "(B)有機化合物必含碳、氫 [cite: 57]", "(C)人體物質均為有機物 [cite: 58]", "(D)可從無機物製造有機物 [cite: 59]"], answer: ["A", "D"], expl: "有機物必含碳但不一定含氫 [cite: 57]。現在可人工合成有機物 [cite: 59]。" },
-        { num: "10", type: "single", text: "原子量敘述何者錯誤？ [cite: 60]", options: ["(A)氧原子可用天平直接秤量 [cite: 61]", "(B)氧氣與水的氧原子量相等 [cite: 62]", "(C)碳-12原子量12是實驗測得 [cite: 63]", "(D)原子量僅是代表數字 [cite: 64]"], answer: ["A"], expl: "單個原子質量極小，無法以天平測得 [cite: 61, 64]。" },
-        { num: "11", type: "single", text: "過濾後飽和食鹽水，甲加熱至40℃，乙不加熱，何者正確？ [cite: 66]", options: ["(A)甲飽和乙未飽和", "(B)甲未飽和乙飽和 [cite: 68]", "(C)均飽和", "(D)均未飽和"], answer: ["B"], expl: "食鹽溶解度隨溫升而升，原飽和溶液加熱後變未飽和 [cite: 68]。" },
-        { num: "12", type: "multi", text: "碳酸鈉與氯化鈣溶液混合，敘述何者正確？ [cite: 71]", options: ["(A)產生沉澱 [cite: 76]", "(B)產生氣泡", "(C)溶液無色", "(D)總質量不變 [cite: 79]"], answer: ["A", "D"], expl: "產生碳酸鈣白色沉澱，且符合質量守恆 [cite: 76, 79]。" },
-        { num: "13", type: "multi", text: "原子序8，質量數19，何者正確？ [cite: 80]", options: ["(A)8個質子 [cite: 81]", "(B)8個電子 [cite: 82]", "(C)19個質子", "(D)8個中子"], answer: ["A", "B"], expl: "原子序=質子數=電子數=8 [cite: 81, 82]。中子數=19-8=11。" },
-        { num: "14", type: "single", text: "甲原子量大於乙原子量，何者正確？ [cite: 85]", options: ["(A)甲質量大於乙 [cite: 86]", "(B)甲密度大於乙", "(C)甲體積大於乙", "(D)以上都正確"], answer: ["A"], expl: "原子量是原子質量的相對比較值 [cite: 86, 88]。" },
-        { num: "15", type: "multi", text: "關於塑膠的敘述，何者正確？ [cite: 91]", options: ["(A)加熱必軟化", "(B)不溶於有機溶劑", "(C)需回收再利用 [cite: 94]", "(D)不易分解常造成環保問題 [cite: 95]"], answer: ["C", "D"], expl: "熱固性塑膠加熱不軟化 [cite: 92]。塑膠屬難分解垃圾 [cite: 95]。" },
-        { num: "16", type: "multi", text: "元素與化合物敘述，何者正確？ [cite: 96]", options: ["(A)皆無法分解", "(B)皆有固定熔沸點 [cite: 98]", "(C)皆是純物質 [cite: 99]", "(D)元素由化合物組成"], answer: ["B", "C"], expl: "元素與化合物均屬純物質，有固定熔沸點 [cite: 98, 99]。" },
-        { num: "17", type: "multi", text: "有關溶液敘述，何者正確？ [cite: 101]", options: ["(A)油可溶於水", "(B)包含溶劑溶質及水", "(C)溶液可能是氣液固態 [cite: 104]", "(D)溶劑若酒精稱酒精溶液 [cite: 105]"], answer: ["C", "D"], expl: "溶液可以是三態（如合金或空氣） [cite: 104]。" },
-        { num: "18", type: "multi", text: "週期表敘述，何者正確？ [cite: 106]", options: ["(A)橫列週期縱欄族 [cite: 107]", "(B)依原子序排列 [cite: 108]", "(C)同族性質類似 [cite: 109]", "(D)元素可能增加 [cite: 110]"], answer: ["A", "B", "C", "D"], expl: "現代週期表依原子序排列，性質具週期性 [cite: 107, 108]。" },
-        { num: "19", type: "multi", text: "濾紙色層分析法敘述，何者錯誤？ [cite: 111]", options: ["(A)利用體積分離", "(B)加熱加快速度", "(C)須在真空進行", "(D)可分離彩色筆色素 [cite: 115]"], answer: ["A", "B", "C"], expl: "此法利用對溶劑附著力不同進行分離，不需真空或加熱 [cite: 112, 114]。" },
-        { num: "20", type: "multi", text: "甲10g升溫10℃需10卡，乙20g升溫10℃需20卡： [cite: 116]", options: ["(A)一定同種物質", "(B)一定不同物質", "(C)可能同種物質 [cite: 119]", "(D)可能不同物質 [cite: 120]"], answer: ["C", "D"], expl: "兩者比熱均為 0.1 cal/g·℃，故無法斷定是否為同物質 [cite: 119, 120]。" },
-        { num: "21", type: "multi", text: "關於熱量敘述何者正確？ [cite: 121]", options: ["(A)溫度計測量熱量", "(B)熱量多傳向少", "(C)1卡定義1克水升1℃ [cite: 124]", "(D)高溫傳向低溫 [cite: 125]"], answer: ["C", "D"], expl: "熱量傳遞動力是溫差 [cite: 125]。" },
-        { num: "22", type: "single", text: "2CO<sub>2</sub> 的意義何者正確？ [cite: 126]", options: ["(A)1個C與2個O結合的分子共2個 [cite: 127]", "(B)2個C與1個O原子...", "(C)2個C與4個O原子...", "(D)2個C與2個O原子..."], answer: ["A"], expl: "係數2代表分子數，化學式下標代表原子組成 [cite: 127]。" },
-        { num: "23", type: "multi", text: "關於鐵礦冶煉敘述，何者正確？ [cite: 135]", options: ["(A)焦煤為燃料 [cite: 136]", "(B)產出稱生鐵 [cite: 137]", "(C)煤焦氧化生CO<sub>2</sub> [cite: 138]", "(D)煉鋼主材是生鐵 [cite: 139]"], answer: ["A", "B", "C", "D"], expl: "焦煤作為還原劑與熱源 [cite: 136, 138]。" },
-        { num: "24", type: "single", text: "化合物溶於水解離反應式何者正確？ [cite: 140]", options: ["(A) MgCl<sub>2</sub> → Mg<sup>2+</sup>+2Cl<sup>-</sup> [cite: 141]", "(B) CuSO<sub>4</sub> → CuO<sup>2+</sup>...", "(C) CH<sub>3</sub>OH → CH<sub>3</sub><sup>+</sup>+OH<sup>-</sup>", "(D) C<sub>2</sub>H<sub>5</sub>COOH → C<sub>2</sub>H<sub>5</sub>COO<sup>-</sup>+H<sup>+</sup>"], answer: ["A", "D"], expl: "甲醇不解離 [cite: 143]。MgCl<sub>2</sub>與乙酸均正確解離 [cite: 141, 144]。" },
-        { num: "25", type: "single", text: "馬鈴薯切小塊炸較快熟是因為： [cite: 145]", options: ["(A)活性較大", "(B)活性較大", "(C)表面積較大", "(D)表面積較大 [cite: 149]"], answer: ["D"], expl: "增加接觸面積可提高反應速率 [cite: 149]。" },
-        { num: "26", type: "multi", text: "關於石油描述何者錯誤？ [cite: 150]", options: ["(A)開採即可給汽車使用", "(B)石油是化合物", "(C)長期高溫高壓形成 [cite: 153]", "(D)液化石油氣不可作燃料"], answer: ["A", "B", "D"], expl: "石油是混合物 [cite: 152]，須經分餾後才可使用 [cite: 151]。" },
-        { num: "27", type: "multi", text: "下列敘述何者正確？ [cite: 155]", options: ["(A)汽油是純物質", "(B)純果汁屬混合物 [cite: 157]", "(C)礦泉水屬混合物 [cite: 158]", "(D)食鹽水屬混合物 [cite: 159]"], answer: ["B", "C", "D"], expl: "汽油與礦泉水均含多種組分，屬混合物 [cite: 156, 158]。" },
-        { num: "28", type: "single", text: "溫標描述何者正確？ [cite: 160]", options: ["(A)發燒約100℃", "(B)水沸點100°F", "(C)水結冰0°F", "(D)絕對零度-273°F"], answer: ["0"], expl: "均錯誤 [cite: 161-164]。沸點為212°F，結冰為32°F。" },
-        { num: "29", type: "multi", text: "有關電池敘述何者正確？ [cite: 165]", options: ["(A)鉛蓄電池正極碳棒", "(B)鋰電池可充電 [cite: 167]", "(C)化學能轉電能 [cite: 168]", "(D)電流屬交流電"], answer: ["B", "C"], expl: "電池提供直流電 [cite: 169]。鉛蓄電池正極為PbO<sub>2</sub> [cite: 166]。" },
-        { num: "30", type: "multi", text: "有關人造纖維敘述何者正確？ [cite: 170]", options: ["(A)再生纖維稱人造絲 [cite: 171]", "(B)再生纖維耐拉扯", "(C)再生纖維易染洗 [cite: 173]", "(D)合成纖維石油原料 [cite: 174]"], answer: ["A", "C", "D"], expl: "合成纖維以石油為原料 [cite: 174]，再生纖維吸水佳但強度較低 [cite: 172]。" },
-        { num: "31", type: "single", text: "電解硫酸銅產物何者正確？ [cite: 176]", options: ["(A)正極產氧 [cite: 177]", "(B)正極產銅", "(C)負極產氫", "(D)負極產硫酸"], answer: ["A"], expl: "正極放氧，負極析出銅金屬 [cite: 177, 178]。" },
-        { num: "32", type: "multi", text: "汽油、甘油等性質敘述何者正確？ [cite: 181]", options: ["(A)香蕉油烴類", "(B)甘油醇類", "(C)甘油溶於水 [cite: 184]", "(D)汽油中性 [cite: 185]"], answer: ["B", "C", "D"], expl: "香蕉油是酯類。甘油(丙三醇)易溶於水 [cite: 184]。" },
-        { num: "33", type: "multi", text: "2024諾貝爾化學獎領域： [cite: 186]", options: ["(A)計算蛋白質設計 [cite: 187]", "(B)探索新元素", "(C)蛋白質結構預測 [cite: 189]", "(D)氣候變遷"], answer: ["A", "C"], expl: "該獎項頒給了蛋白質設計與預測相關研究 [cite: 187, 189]。" },
-        { num: "34", type: "multi", text: "ESG 敘述何者正確？ [cite: 191]", options: ["(A)企業永續標準 [cite: 192]", "(B)含環保社會治理 [cite: 193]", "(C)投資考量因素 [cite: 194]", "(D)助風險管理 [cite: 195]"], answer: ["A", "B", "C", "D"], expl: "ESG涵蓋環境、社會及公司治理三大維度 [cite: 193]。" },
+        // 選擇題 1-34
+        { num: "1", type: "multi", text: "各平衡反應受擾動因素影響後，有關平衡移動方向，何者正確？", options: ["(A) N<sub>2</sub>O<sub>4</sub> ⇌ 2NO<sub>2</sub>：相同的容器加入 NO<sub>2(g)</sub>，平衡向右", "(B) Br<sub>2</sub>+H<sub>2</sub>O ⇌ H<sup>+</sup>+Br<sup>-</sup>+HBrO，加入鹼，平衡向右", "(C) Cl<sub>2</sub>+H<sub>2</sub>O ⇌ H<sup>+</sup>+Cl<sup>-</sup>+HClO，加入酸，平衡向左", "(D) C+CO<sub>2</sub> ⇌ 2CO，加入CO，平衡不移動"], answer: ["B", "C"], expl: "根據勒沙特列原理：(B)鹼會消耗H<sup>+</sup>，使平衡向右移動。(C)加酸增加H<sup>+</sup>，使平衡向左移動。" },
+        { num: "2", type: "multi", text: "欲配製重量百分率濃度為10%的糖水，下列敘述何者正確？", options: ["(A)取20%糖水加熱蒸發質量減半可得10%糖水", "(B)取20%糖水和等質量的水均勻混合可得10%糖水", "(C)取20%糖水分成兩杯則濃度不變", "(D)取10公克糖溶於100公克水中，得濃度小於10%糖水"], answer: ["B", "C", "D"], expl: "(B)稀釋一倍濃度減半。(D)10/(10+100) = 9.09% < 10%。" },
+        { num: "3", type: "multi", text: "有關化學反應式的敘述，下列何者正確？", options: ["(A)表示實際發生的化學反應，不能憑空杜撰", "(B)用「→」表示化學反應的方向", "(C)化學反應式即化學式", "(D)左、右兩邊分子數目須相等"], answer: ["A", "B"], expl: "反應式左右原子數必須相等，但分子數不一定。" },
+        { num: "4", type: "single", text: "反應式 2A+B → 2R，a公克A與b公克B完全反應生成r公克R，何者正確？", options: ["(A) 2a+b=2r", "(B) a/2+b=r/2", "(C) a+b=r", "(D) a+b=2r"], answer: ["C"], expl: "依質量守恆定律，反應物總質量(a+b) = 產物總質量(r)。" },
+        { num: "5", type: "multi", text: "鋼板鍍鋅防鏽敘述，何者正確？", options: ["(A)鋅活性比鐵大易氧化", "(B)鋅氧化物結構緊密能隔離鐵與氧", "(C)鋅與鐵形成合金降低活性", "(D)鋅活性比鐵小"], answer: ["A", "B"], expl: "鋅活性大於鐵，但其生成的緻密氧化層可保護內部的鐵。" },
+        { num: "6", type: "multi", text: "鎂帶與銅箔加熱，敘述何者正確？", options: ["(A)兩者均會燃燒", "(B)鎂火焰呈強烈白光，銅不會燃燒", "(C)兩者都會發生氧化反應", "(D)產物均極易溶於水"], answer: ["B", "C"], expl: "鎂在空氣中燃燒發強光，銅僅表面氧化變黑，且氧化銅不溶於水。" },
+        { num: "7", type: "multi", text: "手工香皂製造敘述，何者正確？", options: ["(A)加入乙醇用來溶解回鍋油", "(B)加入氫氧化鈉進行皂化", "(C)加入酒精使反應加速", "(D)加入飽和食鹽水促使析出"], answer: ["A", "B", "C", "D"], expl: "酒精協助油鹼混合，食鹽水用於鹽析分離肥皂。" },
+        { num: "8", type: "single", text: "化學變化發生前後，下列敘述何者錯誤？", options: ["(A)原子總數不變", "(B)分子總數不變", "(C)原子、分子數都改變", "(D)原子總數改變"], answer: ["B", "C", "D"], expl: "原子數恆不變。分子數與性質皆可能改變。" },
+        { num: "9", type: "multi", text: "有關有機/無機化合物敘述，何者正確？", options: ["(A)無機物不只存在於礦物中", "(B)有機物必含碳、氫", "(C)人體物質均為有機物", "(D)可從無機物製造有機物"], answer: ["A", "D"], expl: "有機物必含碳，但不一定含氫。人體含水(無機)。" },
+        { num: "10", type: "single", text: "原子量敘述何者錯誤？", options: ["(A)氧原子可用天平直接秤量", "(B)氧氣與水的氧原子量相等", "(C)碳-12原子量為12是實驗測得", "(D)原子量僅是代表數字"], answer: ["A"], expl: "單個原子質量太小，無法用一般天平秤量。" },
+        { num: "11", type: "single", text: "飽和食鹽水，甲加熱至40℃，乙維持室溫，何者正確？", options: ["(A)甲飽和乙未飽和", "(B)甲未飽和乙飽和", "(C)均飽和", "(D)均未飽和"], answer: ["B"], expl: "食鹽溶解度隨溫升而增，原飽和溶液加熱變未飽和。" },
+        { num: "12", type: "multi", text: "碳酸鈉與氯化鈣溶液混合，敘述何者正確？", options: ["(A)產生沉澱", "(B)產生氣泡", "(C)溶液無色", "(D)總質量不變"], answer: ["A", "D"], expl: "產物為碳酸鈣白色沉澱。遵循質量守恆。" },
+        { num: "13", type: "multi", text: "原子序8，質量數19，何者正確？", options: ["(A)8個質子", "(B)8個電子", "(C)19個質子", "(D)8個中子"], answer: ["A", "B"], expl: "質子數=電子數=原子序=8。中子數=19-8=11。" },
+        { num: "14", type: "single", text: "甲原子量大於乙原子量，何者正確？", options: ["(A)甲質量大於乙", "(B)甲密度大於乙", "(C)甲體積大於乙", "(D)以上都對"], answer: ["A"], expl: "原子量即表示原子質量的相對大小。" },
+        { num: "15", type: "multi", text: "塑膠敘述何者正確？", options: ["(A)加熱必軟化", "(B)不溶於有機溶劑", "(C)需回收再利用", "(D)造成環保問題"], answer: ["C", "D"], expl: "熱固性塑膠加熱不軟化。塑膠難分解造成環境負擔。" },
+        { num: "16", type: "multi", text: "元素與化合物敘述，何者正確？", options: ["(A)皆無法再分解", "(B)皆有固定熔沸點", "(C)皆是純物質", "(D)元素由化合物組成"], answer: ["B", "C"], expl: "純物質均有固定熔沸點。化合物可由化學法分解。" },
+        { num: "17", type: "multi", text: "有關溶液敘述，何者正確？", options: ["(A)油可均勻溶於水", "(B)包含溶劑溶質及水", "(C)溶液可能是氣液固態", "(D)溶劑若酒精稱酒精溶液"], answer: ["C", "D"], expl: "三態均有溶液實例，如空氣(氣)、合金(固)。" },
+        { num: "18", type: "multi", text: "週期表敘述，何者正確？", options: ["(A)橫列週期縱欄族", "(B)依原子序排列", "(C)同族性質類似", "(D)元素可能增加"], answer: ["A", "B", "C", "D"], expl: "均符合現代週期表特徵。" },
+        { num: "19", type: "multi", text: "濾紙色層分析法敘述，何者錯誤？", options: ["(A)利用體積分離", "(B)加熱加快速度", "(C)須在真空進行", "(D)可分離色素"], answer: ["A", "B", "C"], expl: "利用吸附力與溶解度差異進行分離，不需真空或加熱。" },
+        { num: "20", type: "multi", text: "甲10g升10℃需10卡，乙20g升10℃需20卡：", options: ["(A)一定同種物質", "(B)一定不同物質", "(C)可能同種物質", "(D)可能不同物質"], answer: ["C", "D"], expl: "計算得比熱均為0.1，比熱相同者可能是同物質或不同物質。" },
+        { num: "21", type: "multi", text: "熱量敘述何者正確？", options: ["(A)溫度計測熱量", "(B)熱量多傳向少", "(C)1卡定義1克水升1℃", "(D)高溫傳向低溫"], answer: ["C", "D"], expl: "熱由高溫往低溫傳導。" },
+        { num: "22", type: "single", text: "2CO<sub>2</sub> 的意義何者正確？", options: ["(A)1個C與2個O結合的分子共2個", "(B)2個C與1個O...", "(C)2個C與4個O...", "(D)2個C與2個O..."], answer: ["A"], expl: "前置係數代表分子個數。" },
+        { num: "23", type: "multi", text: "鐵礦冶煉敘述，何者正確？", options: ["(A)焦煤為燃料", "(B)高爐產出稱生鐵", "(C)煤焦發生氧化反應", "(D)煉鋼主材是生鐵"], answer: ["A", "B", "C", "D"], expl: "均為現代鋼鐵工業的基本事實。" },
+        { num: "24", type: "single", text: "解離反應式何者正確？", options: ["(A) MgCl<sub>2</sub> → Mg<sup>2+</sup>+2Cl<sup>-</sup>", "(B) CuSO<sub>4</sub> → CuO<sup>2+</sup>...", "(C) CH<sub>3</sub>OH → CH<sub>3</sub><sup>+</sup>+OH<sup>-</sup>", "(D) C<sub>2</sub>H<sub>5</sub>COOH → C<sub>2</sub>H<sub>5</sub>COO<sup>-</sup>+H<sup>+</sup>"], answer: ["A", "D"], expl: "甲醇是非電解質不解離。(D)有機酸於末端H解離。" },
+        { num: "25", type: "single", text: "馬鈴薯切小塊炸較快熟是因為：", options: ["(A)活性較大", "(B)活性較大", "(C)總表面積較大", "(D)總表面積較大"], answer: ["D"], expl: "切塊增加表面積，提高反應速率。" },
+        { num: "26", type: "multi", text: "關於石油描述何者錯誤？", options: ["(A)原油可直接給車使用", "(B)石油是化合物", "(C)長期高溫高壓形成", "(D)液化石油氣不可作燃料"], answer: ["A", "B", "D"], expl: "石油是混合物須經分餾。LPG是常用燃料。" },
+        { num: "27", type: "multi", text: "下列敘述何者正確？", options: ["(A)汽油是純物質", "(B)純果汁屬混合物", "(C)礦泉水屬混合物", "(D)食鹽水屬混合物"], answer: ["B", "C", "D"], expl: "除蒸餾水外，多數天然水體與加工飲品均為混合物。" },
+        { num: "28", type: "single", text: "溫標描述何者正確？", options: ["(A)發燒100℃", "(B)水沸點100°F", "(C)水結冰0°F", "(D)絕對零度-273°F"], answer: ["0"], expl: "選項均錯誤。絕對零度約為-273℃。" },
+        { num: "29", type: "multi", text: "有關電池敘述何者正確？", options: ["(A)鉛蓄電池正極碳棒", "(B)鋰電池可充電", "(C)化學能轉電能", "(D)電流屬交流電"], answer: ["B", "C"], expl: "電池提供直流電。鋰電池屬二次電池可充電。" },
+        { num: "30", type: "multi", text: "人造纖維敘述何者正確？", options: ["(A)再生纖維稱人造絲", "(B)再生纖維耐拉扯", "(C)再生纖維具光澤", "(D)合成纖維石油原料"], answer: ["A", "C", "D"], expl: "再生纖維吸水性佳但強度通常不如合成纖維。" },
+        { num: "31", type: "single", text: "電解硫酸銅(碳棒)產物何者正確？", options: ["(A)正極產氧", "(B)正極產銅", "(C)負極產氫", "(D)負極產硫酸"], answer: ["A"], expl: "負極析出銅，正極電解水產生氧氣。" },
+        { num: "32", type: "multi", text: "香蕉油、甘油與食醋特性：", options: ["(A)汽油香蕉油為烴類", "(B)香蕉油甘油醇類", "(C)甘油食醋溶於水", "(D)汽油甘油中性"], answer: ["C", "D"], expl: "香蕉油是酯類。甘油與食醋易溶於水。" },
+        { num: "33", type: "multi", text: "2024諾貝爾化學獎獲獎領域：", options: ["(A)計算蛋白質設計", "(B)探索新元素", "(C)蛋白質結構預測", "(D)氣候變遷研究"], answer: ["A", "C"], expl: "該年度獎項頒給了蛋白質預測與設計相關學者。" },
+        { num: "34", type: "multi", text: "關於ESG敘述何者正確？", options: ["(A)企業永續標準", "(B)含環保社會治理", "(C)投資重要因素", "(D)助風險管理"], answer: ["A", "B", "C", "D"], expl: "ESG為當前企業永續發展的核心指標。" },
         
-        // 非選擇題部分
-        { num: "非選 1", type: "calc", text: "食用20克餅乾會吃進多少莫耳的磷？(每100g含P 930mg, P=31) [cite: 199]", answer: "0.006", expl: "(930mg/100g) × 20g = 186mg = 0.186g。0.186 / 31 = 0.006 莫耳 [cite: 201]。" },
-        { num: "非選 2", type: "calc", text: "20g A 與 40g B 反應 3A+B→4C，產生C多少公克？ [cite: 203]", answer: "60", expl: "依質量守恆：20 + 40 = 60 公克 [cite: 203]。" },
-        { num: "非選 3", type: "calc", text: "6M 硫酸倒去半瓶，加滿水；又倒去一瓶，再加水到半瓶，最後濃度？ ", answer: "0", expl: "「倒去一瓶」意指將剩餘溶液全數清空，故最後無溶質，濃度為 0 。" },
-        { num: "非選 4", type: "calc", text: "9×10<sup>24</sup> 個葡萄糖發酵，最多產生乙醇多少克？ ", answer: "1380", expl: "莫耳數 = 9×10<sup>24</sup> / 6×10<sup>23</sup> = 15mol。生成乙醇 30mol = 30 × 46 = 1380g 。" },
-        { num: "非選 5", type: "calc", text: "2000g 碳酸鈣完全反應需耗 HCl 多少克？(CaCO<sub>3</sub>=100, HCl=36.5) [cite: 208]", answer: "1460", expl: "2000g CaCO<sub>3</sub> = 20mol。需 40mol HCl = 40 × 36.5 = 1460g [cite: 208]。" }
+        // 修正後的非選擇題 1-5
+        { 
+            num: "非選 1", 
+            type: "calc", 
+            text: "附表為某食品的營養成分表，試問食用 20 克會吃進多少莫耳的磷？(原子量：P:31)<br><table><tr><th colspan='4'>每 100 克餅乾的成分</th></tr><tr><td>蛋白質</td><td>36 克</td><td>鈣</td><td>800 毫克</td></tr><tr><td>脂肪</td><td>10 克</td><td>磷</td><td>930 毫克</td></tr><tr><td>澱粉</td><td>48 克</td><td>鈉</td><td>360 毫克</td></tr><tr><td>水</td><td>4 克</td><td>鐵</td><td>40 毫克</td></tr></table>", 
+            answer: "0.006", 
+            expl: "100g 含有 930mg 磷。20g 餅乾含磷 = 930 * (20/100) = 186mg = 0.186g。莫耳數 = 0.186 / 31 = 0.006 mol。" 
+        },
+        { 
+            num: "非選 2", 
+            type: "calc", 
+            text: "20 公克 A 恰與 40 公克 B 完全反應，反應式為 3A+B→4C，產生 C 物質多少公克？", 
+            answer: "60", 
+            expl: "質量守恆：反應前 20+40 = 60g，反應後產物亦為 60g。" 
+        },
+        { 
+            num: "非選 3", 
+            type: "calc", 
+            text: "將濃度 6M 之硫酸倒去半瓶再用水加滿，又再倒去 3/4 瓶，再用水加到半瓶，最後濃度為何？", 
+            answer: "1.5", 
+            expl: "1. 6M 剩半瓶加滿變 3M。<br>2. 倒去 3/4 瓶剩下 1/4 瓶，濃度仍為 3M。<br>3. 加水到半瓶（體積由 1/4 增為 1/2，稀釋 2 倍）。<br>4. 最後濃度 = 3 / 2 = 1.5M。" 
+        },
+        { 
+            num: "非選 4", 
+            type: "calc", 
+            text: "葡萄糖發酵：C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> → 2 C<sub>2</sub>H<sub>5</sub>OH + 2 CO<sub>2</sub>。現有 9×10<sup>24</sup> 個葡萄糖，產生乙醇多少公克？(C:12, H:1, O:16)", 
+            answer: "1380", 
+            expl: "1. 葡萄糖莫耳數 = (9e24)/(6e23) = 15 mol。<br>2. 產生乙醇 30 mol。<br>3. 乙醇分子量 46，質量 = 30 * 46 = 1380 g。" 
+        },
+        { 
+            num: "非選 5", 
+            type: "calc", 
+            text: "取 2000 公克碳酸鈣(CaCO<sub>3</sub>)與鹽酸完全反應，最少耗鹽酸多少克？(CaCO<sub>3</sub>=100, HCl=36.5)", 
+            answer: "1460", 
+            expl: "CaCO<sub>3</sub>(20mol) + 2HCl → CaCl<sub>2</sub> + CO<sub>2</sub> + H<sub>2</sub>O。所需 HCl = 40 mol = 40 * 36.5 = 1460 g。" 
+        }
     ];
 
     let currentIdx = 0;
@@ -94,7 +125,7 @@
 
     function loadQuestion() {
         const data = quizData[currentIdx];
-        document.getElementById('q-num').innerText = isNaN(data.num) ? data.num : "Question " + data.num;
+        document.getElementById('q-num').innerText = (data.num.includes("非選")) ? data.num : "Question " + data.num;
         document.getElementById('q-text').innerHTML = data.text;
         document.getElementById('p-fill').style.width = ((currentIdx+1)/quizData.length*100) + "%";
         
@@ -105,7 +136,7 @@
         if (data.type === "calc") {
             const tx = document.createElement('textarea');
             tx.id = "calc-input";
-            tx.placeholder = "請輸入計算答案 (純數字)...";
+            tx.placeholder = "請輸入計算後的純數字結果 (例如: 1380)...";
             inputArea.appendChild(tx);
         } else {
             const optDiv = document.createElement('div');
@@ -142,24 +173,31 @@
     function checkAnswer() {
         const data = quizData[currentIdx];
         let isCorrect = false;
+        
         if (data.type === "calc") {
-            isCorrect = document.getElementById('calc-input').value.trim().includes(data.answer);
+            const userVal = document.getElementById('calc-input').value.trim();
+            isCorrect = userVal.includes(data.answer);
         } else {
             isCorrect = JSON.stringify(selectedIds.sort()) === JSON.stringify(data.answer.sort());
         }
+
         const fb = document.getElementById('feedback');
         fb.style.display = 'block';
         fb.className = isCorrect ? 'correct-bg' : 'wrong-bg';
         document.getElementById('stat').innerText = isCorrect ? "✅ 答對了！" : "❌ 答錯了！";
         document.getElementById('expl').innerHTML = "<b>正確答案：" + (Array.isArray(data.answer) ? data.answer.join(",") : data.answer) + "</b><br>" + data.expl;
+        
         document.getElementById('submit-btn').style.display = 'none';
         document.getElementById('next-btn').style.display = 'block';
     }
 
     function loadNext() {
         currentIdx++;
-        if (currentIdx < quizData.length) loadQuestion();
-        else alert("恭喜！你已完成全卷 39 題練習。");
+        if (currentIdx < quizData.length) {
+            loadQuestion();
+        } else {
+            alert("恭喜！您已完成全卷 39 題化學科競賽練習。");
+        }
     }
 
     window.onload = loadQuestion;

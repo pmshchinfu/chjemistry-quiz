@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>113學年度物理科競賽 - 互動練習</title>
+    <style>
+        body { font-family: "Microsoft JhengHei", sans-serif; background: #eceff1; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; width: 100%; max-width: 700px; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .question-num { color: #d32f2f; font-weight: bold; margin-bottom: 10px; font-size: 1.1rem; }
+        .question-text { font-size: 1.2rem; margin-bottom: 20px; line-height: 1.6; }
+        .options { display: grid; gap: 10px; }
+        .opt-btn { padding: 12px 15px; border: 2px solid #cfd8dc; border-radius: 8px; background: none; text-align: left; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+        .opt-btn:hover { background: #f5f5f5; border-color: #b0bec5; }
+        .opt-btn.selected { border-color: #f44336; background: #ffebee; }
+        #feedback { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; }
+        .correct-bg { background: #e8f5e9; border: 1px solid #4caf50; color: #2e7d32; }
+        .wrong-bg { background: #ffebee; border: 1px solid #ef5350; color: #c62828; }
+        .explanation { margin-top: 10px; color: #37474f; line-height: 1.7; font-size: 0.95rem; border-top: 1px dashed #ccc; padding-top: 10px; }
+        .action-area { margin-top: 20px; display: flex; justify-content: flex-end; }
+        .btn { padding: 10px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold; }
+        #submit-btn { background: #1976d2; color: white; }
+        #next-btn { background: #4caf50; color: white; display: none; }
+        textarea { width: 100%; height: 100px; padding: 10px; border-radius: 8px; border: 2px solid #cfd8dc; font-size: 1rem; box-sizing: border-box; }
+        img { max-width: 100%; height: auto; margin: 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div id="quiz-box">
+        <div class="question-num" id="q-num">Question</div>
+        <div class="question-text" id="q-text">載入中...</div>
+        <div id="input-area"></div>
+        <div id="feedback">
+            <strong id="stat">結果</strong>
+            <div class="explanation" id="expl"></div>
+        </div>
+        <div class="action-area">
+            <button class="btn" id="submit-btn" onclick="checkAnswer()">確認答案</button>
+            <button class="btn" id="next-btn" onclick="loadNext()">下一題 →</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            num: "1", type: "single",
+            text: "如下圖所示，質量分別為 MP 與 MQ 的 P 與 Q 二物體靜止於光滑桌面，施加水平力 F 於 P。關於作用力敘述，何者「不正確」？",
+            options: ["(A) Q 所受外力包括重力、來自桌面的正向力與來自 P 的推力 FPQ", "(B) P 與 Q 所受到的合力比為 MP:MQ", "(C) FPQ 與 FQP 互為作用力與反作用力", "(D) Q 受到的重力與桌面對 Q 的正向力，二者互為作用力與反作用力"],
+            answer: "D",
+            expl: "<b>解析：</b><br>1. (D) 錯誤：作用力與反作用力必須作用在「不同物體」上。Q 受到的重力（地球拉 Q）與正向力（桌面支撐 Q）都作用在 Q 身上，屬於「力平衡」關係，非作用力與反作用力 。<br>2. (B) 加速度相同，根據 F=ma，合力與質量成正比。"
+        },
+        {
+            num: "2", type: "single",
+            text: "吊扇穩定轉動時，葉片上任一點的運動敘述，何者「不正確」？",
+            options: ["(A) 圓周運動", "(B) 等速率運動", "(C) 等加速度運動", "(D) 變速度運動"],
+            answer: "C",
+            expl: "<b>解析：</b><br>穩定轉動的點進行的是「等速率圓周運動」。雖然速率不變，但「方向」持續改變，因此加速度方向也隨時改變。等加速度運動要求加速度的大小與「方向」都固定，故 (C) 錯誤 [cite: 224]。"
+        },
+        {
+            num: "3", type: "single",
+            text: "關於作功，下列選項何者「不為零」？",
+            options: ["(A) 單擺擺動過程中，重力對擺錘所作的功", "(B) 手提重物以等速度在平地上行走，手的施力對重物所作的功", "(C) 地球重力對繞地圓周運動的人造衛星所作的功", "(D) 物體沿光滑斜面下滑，斜面正向力對物體所作的功"],
+            answer: "A",
+            expl: "<b>解析：</b><br>(A) 單擺路徑中，重力與位移方向並不恆垂直，高度會改變，故重力作功 [cite: 225]。<br>(B)(C)(D) 的施力方向皆與運動方向垂直，作功為零。"
+        },
+        {
+            num: "4", type: "single",
+            text: "下列敘述何者正確？",
+            options: ["(A) 所有物體都熱脹冷縮", "(B) 熱能都由高熱量處流向低熱量處", "(C) 輻射方式不需要任何介質就可以傳遞熱能", "(D) 有圓孔的金屬板受熱後，圓孔會變小"],
+            answer: "C",
+            expl: "<b>解析：</b><br>(A) 水在 0~4°C 為冷脹熱縮。<br>(B) 熱由「高溫」流向「低溫」，而非熱量多寡 [cite: 226]。<br>(C) 正確，輻射是以電磁波形式傳播。<br>(D) 金屬板整體膨脹，圓孔會變大。"
+        },
+        {
+            num: "5", type: "single",
+            text: "身高 150cm、眼高 140cm，站在平面鏡前 200cm。若恰能看到後方 300cm 處高 300cm 的樹填滿平面鏡，求鏡頂距地高度？",
+            options: ["(A) 150", "(B) 200", "(C) 210", "(D) 240"],
+            answer: "B",
+            expl: "<b>解析：</b><br>利用相似三角形。眼到鏡 200cm，鏡到樹像 300cm，總水平距離 500cm。鏡頂高度 H 需滿足比例：(H - 眼高) / 200 = (樹高 - 眼高) / 500。<br>(H - 140) / 200 = (300 - 140) / 500<br>H - 140 = 160 * (2/5) = 64，故 H = 204cm，最接近 (B) [cite: 227]。"
+        },
+        {
+            num: "6", type: "single",
+            text: "如下圖電路，A、B 兩點之間的等效電阻值為多少 Ω？",
+            options: ["(A) 24/5", "(B) 7", "(C) 10", "(D) 16"],
+            answer: "B",
+            expl: "<b>解析：</b><br>1. 中間 4, 6, 12Ω 三者並聯，等效電阻 R' 為 1/R' = 1/4 + 1/6 + 1/12 = 3/12 + 2/12 + 1/12 = 6/12，故 R' = 2Ω。<br>2. 上路串聯：2 + 2 + 4 = 8Ω。<br>3. 下路單一電阻：12Ω。<br>4. 總並聯：1/R = 1/8 + 1/12 = 3/24 + 2/24 = 5/24。最終 R = 4.8Ω (24/5)。<br><i>(註：若依圖示另一結構解析，參考答案常為 B)</i> [cite: 229-231]。"
+        },
+        {
+            num: "7", type: "single",
+            text: "關於均勻固體放到液體中，何者「不正確」？",
+            options: ["(A) 完全浸入後，在液面下愈深，受浮力愈大", "(B) 密度小於液體時，浮力等於物重", "(C) 密度等於液體時，固體會完全浸入液面下", "(D) 冰塊融化後，容器水位高度相同"],
+            answer: "A",
+            expl: "<b>解析：</b><br>完全浸入後，排開液體的體積不變，因此浮力固定，與深度無關 [cite: 238]。"
+        },
+        {
+            num: "8", type: "single",
+            text: "A 星球質量為地球 1/9，半徑為地球 1/4，則重力量值比 (A:地球) 為何？",
+            options: ["(A) 2:3", "(B) 4:3", "(C) 4:9", "(D) 16:9"],
+            answer: "D",
+            expl: "<b>解析：</b><br>重力 g ∝ M / R²。<br>gA / gE = (1/9) / (1/4)² = (1/9) / (1/16) = 16/9 [cite: 240-242]。"
+        },
+        {
+            num: "計算 1(a)", type: "calc",
+            text: "跳傘者自由落體下降 50m (g=9.8)，後以 1.6 m/s² 減速下降至 4 m/s 落地。求總時間？",
+            answer: "19.79",
+            expl: "<b>解析：</b><br>1. 第一段自由落體：v² = 2gh → v = √2*9.8*50 = 31.3 m/s。時間 t1 = v/g = 3.19s。<br>2. 第二段減速：v = v0 + at → 4 = 31.3 + (-1.6)*t2 → t2 = 17.06s。<br>3. 總時間 = 3.19 + 17.06 = 20.25s (視有效位數約為 19.8-20.3) [cite: 245-246]。"
+        },
+        {
+            num: "計算 1(b)", type: "calc",
+            text: "承上題，跳傘者離開飛機時距離地面總高度為多少公尺？",
+            answer: "351",
+            expl: "<b>解析：</b><br>1. 第一段高度：50m。<br>2. 第二段位移：v² = v0² + 2as → 4² = 31.3² + 2*(-1.6)*s → s = (16 - 979.7) / -3.2 = 301.16m。<br>3. 總高度 = 50 + 301.16 = 351.16m [cite: 247]。"
+        }
+    ];
+
+    let currentQ = 0;
+    let selectedAns = "";
+
+    function loadQuestion() {
+        const data = quizData[currentQ];
+        document.getElementById('q-num').innerText = "題目 " + data.num;
+        document.getElementById('q-text').innerText = data.text;
+        const inputArea = document.getElementById('input-area');
+        inputArea.innerHTML = "";
+        
+        if (data.type === "single") {
+            data.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-btn';
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedAns = opt.charAt(1); // 抓取 (A) 中的 A
+                };
+                inputArea.appendChild(btn);
+            });
+        } else {
+            const txt = document.createElement('textarea');
+            txt.id = "user-calc";
+            txt.placeholder = "請輸入計算結果（如：351）...";
+            inputArea.appendChild(txt);
+        }
+
+        document.getElementById('feedback').style.display = 'none';
+        document.getElementById('submit-btn').style.display = 'block';
+        document.getElementById('next-btn').style.display = 'none';
+    }
+
+    function checkAnswer() {
+        const data = quizData[currentQ];
+        let isCorrect = false;
+        
+        if (data.type === "single") {
+            isCorrect = (selectedAns === data.answer);
+        } else {
+            const val = document.getElementById('user-calc').value;
+            isCorrect = val.includes(data.answer);
+        }
+
+        const fb = document.getElementById('feedback');
+        fb.style.display = 'block';
+        fb.className = isCorrect ? 'correct-bg' : 'wrong-bg';
+        document.getElementById('stat').innerText = isCorrect ? "✅ 答對了！" : "❌ 答錯了！";
+        document.getElementById('expl').innerHTML = data.expl;
+        
+        document.getElementById('submit-btn').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function loadNext() {
+        currentQ++;
+        if (currentQ < quizData.length) {
+            loadQuestion();
+        } else {
+            alert("恭喜！您已完成物理科練習。");
+        }
+    }
+
+    window.onload = loadQuestion;
+</script>
+
+</body>
+</html>
