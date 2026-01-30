@@ -3,9 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>普門中學 鍾青府老師 - 理化數位教室</title>
+    <title>鍾青府老師 - 國中理化數位學習網</title>
     <style>
-        :root { --p1: #2980b9; --p2: #27ae60; --p3: #d35400; --p4: #8e44ad; --dark: #2c3e50; }
+        :root { 
+            --p1: #2980b9; 
+            --p2: #27ae60; 
+            --p3: #d35400; 
+            --p4: #8e44ad; 
+            --p5: #e67e22; /* 新增：自然競賽區塊的主題橘色 */
+            --dark: #2c3e50; 
+        }
         body { font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif; background: #f0f3f5; margin: 0; padding: 20px; }
         .header { background: var(--dark); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
@@ -14,9 +21,12 @@
         .vol-card:hover { transform: translateY(-5px); }
         .vol-card h2 { margin: 0; padding: 15px; color: white; text-align: center; font-size: 1.2em; }
         
-        /* 四冊顏色區分 */
-        .v1 { background: var(--p1); } .v2 { background: var(--p2); }
-        .v3 { background: var(--p3); } .v4 { background: var(--p4); }
+        /* 五個區塊顏色區分 */
+        .v1 { background: var(--p1); } 
+        .v2 { background: var(--p2); }
+        .v3 { background: var(--p3); } 
+        .v4 { background: var(--p4); }
+        .v5 { background: var(--p5); } /* 自然競賽顏色 */
 
         .chapter-list { list-style: none; padding: 15px; margin: 0; display: grid; grid-template-columns: 1fr; gap: 10px; }
         .chapter-list li a { 
@@ -81,10 +91,17 @@
                 <li><a href="c922/index.html" class="disabled"><span class="tag">c922</span>2. 電磁效應</a></li>
             </ul>
         </div>
+
+        <div class="vol-card">
+            <h2 class="v5">自然學科能力競賽</h2>
+            <ul class="chapter-list">
+                <li><a href="competition/competition_chemistry113.html"><span class="tag">競賽</span>113學年度 - 化學</a></li>
+                <li><a href="#" class="disabled"><span class="tag">競賽</span>113學年度 - 物理</a></li>
+            </ul>
+        </div>
     </div>
 
     <p style="text-align:center; color:#999; margin-top:40px;">&copy; 2026 普門中學 鍾青府老師版權所有</p>
 
 </body>
-
 </html>
