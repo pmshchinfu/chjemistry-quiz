@@ -7,10 +7,12 @@
     <style>
         :root {
             --primary-color: #2c3e50;
+            --secondary-color: #34495e;
             --accent-color: #3498db;
             --success-color: #27ae60;
             --error-color: #c0392b;
             --bg-color: #f4f7f6;
+            --sidebar-width: 240px;
         }
 
         body {
@@ -18,12 +20,78 @@
             background-color: var(--bg-color);
             color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
-            justify-content: center;
             min-height: 100vh;
         }
 
+        /* --- Sidebar Styles --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: #ecf0f1;
+            border-radius: 8px;
+            transition: background 0.3s;
+            font-size: 1rem;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .nav-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* --- Main Content Wrapper --- */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            display: flex;
+            justify-content: center;
+            padding: 30px;
+            box-sizing: border-box;
+            min-height: 100vh; /* Ensure full height */
+            align-items: flex-start; /* Align to top */
+        }
+
+        /* --- Quiz Container --- */
         .container {
             background: white;
             width: 100%;
@@ -34,6 +102,8 @@
             display: flex;
             flex-direction: column;
             position: relative;
+            /* 修正：移除 height fit-content，確保有最小高度 */
+            min-height: 400px; 
         }
 
         header {
@@ -45,62 +115,37 @@
 
         header h1 { margin: 0; font-size: 1.5rem; }
 
-        /* Login Screen Styles */
+        /* --- 修正後的登入畫面樣式 --- */
         .login-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
+            /* 修正重點：移除 absolute，改為相對定位，避免高度塌陷 */
+            position: relative; 
             width: 100%;
-            height: 100%;
             background: white;
             z-index: 100;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 40px 20px;
             box-sizing: border-box;
+            min-height: 300px; /* 給予最小高度 */
         }
 
         .login-form {
             width: 100%;
             max-width: 400px;
-            text-align: left;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--primary-color); }
+        .form-control { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; background-color: #fff; }
+        .seat-container { display: flex; gap: 10px; }
+        .seat-select { flex: 1; }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-
-        .seat-container {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .seat-select {
-            flex: 1;
-        }
-
-        /* Existing Quiz Styles */
+        /* Quiz UI Elements */
         .progress-bar { height: 6px; background-color: #e0e0e0; width: 100%; }
         .progress-fill { height: 100%; background-color: var(--accent-color); width: 0%; transition: width 0.3s ease; }
-        .quiz-content { padding: 30px; flex-grow: 1; display: none; /* Initially hidden */ }
+        .quiz-content { padding: 30px; flex-grow: 1; display: none; }
         
         .question-tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; }
         .tag-basic { background-color: #e8f6f3; color: #1abc9c; }
@@ -134,7 +179,7 @@
         .score-circle { width: 150px; height: 150px; background-color: var(--accent-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; margin: 0 auto 20px; }
         sub { font-size: 0.7em; }
         
-        /* Loading overlay for submission */
+        /* Loading Overlay */
         .loading-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255,255,255,0.9);
@@ -147,96 +192,160 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* Responsive Design for Mobile */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 15px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+
+            .sidebar-title { 
+                margin: 0; 
+                border: none; 
+                padding: 0; 
+                font-size: 1.2rem;
+                margin-right: 10px;
+                display: none;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                gap: 5px;
+                width: 100%;
+                justify-content: space-around;
+            }
+
+            .nav-btn {
+                margin: 0;
+                padding: 8px;
+                font-size: 0.9rem;
+                text-align: center;
+                flex: 1;
+                justify-content: center;
+            }
+
+            .nav-icon { margin-right: 5px; }
+
+            .main-wrapper {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>🧪 國中理化：化學計量特訓</h1>
-    </header>
-    
-    <div class="login-screen" id="loginScreen">
-        <h2>學生資料登入</h2>
-        <div class="login-form">
-            <div class="form-group">
-                <label>班級</label>
-                <select id="classSelect" class="form-control">
-                    <option value="" disabled selected>請選擇班級</option>
-                    <option value="801">801</option>
-                    <option value="802">802</option>
-                    <option value="803">803</option>
-                    <option value="804">804</option>
-                    <option value="805">805</option>
-                </select>
-            </div>
+    <nav class="sidebar">
+        <div class="sidebar-title">理化教室</div>
+        <div class="sidebar-nav">
+            <a href="Chemometrics.pdf" target="_blank" class="nav-btn">
+                <span class="nav-icon">📖</span> 化學計量講義
+            </a>
+            <a href="#" onclick="location.reload()" class="nav-btn active">
+                <span class="nav-icon">📝</span> 化學計量測驗
+            </a>
+            <a href="../index.html" class="nav-btn">
+                <span class="nav-icon">🏠</span> 回首頁
+            </a>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <div class="container">
+            <header>
+                <h1>🧪 國中理化：化學計量特訓</h1>
+            </header>
             
-            <div class="form-group">
-                <label>座號</label>
-                <div class="seat-container">
-                    <select id="seatTens" class="form-control seat-select">
-                        <option value="0">0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                    </select>
-                    <select id="seatUnits" class="form-control seat-select">
-                        <option value="" disabled selected>個位</option>
+            <div class="login-screen" id="loginScreen">
+                <h2>學生資料登入</h2>
+                <div class="login-form">
+                    <div class="form-group">
+                        <label>班級</label>
+                        <select id="classSelect" class="form-control">
+                            <option value="" disabled selected>請選擇班級</option>
+                            <option value="801">801</option>
+                            <option value="802">802</option>
+                            <option value="803">803</option>
+                            <option value="804">804</option>
+                            <option value="805">805</option>
                         </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>座號</label>
+                        <div class="seat-container">
+                            <select id="seatTens" class="form-control seat-select">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                            <select id="seatUnits" class="form-control seat-select">
+                                <option value="" disabled selected>個位</option>
+                                </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>姓名</label>
+                        <input type="text" id="studentName" class="form-control" placeholder="請輸入姓名">
+                    </div>
+
+                    <button class="btn btn-submit" style="width: 100%" onclick="startQuiz()">開始測驗</button>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>姓名</label>
-                <input type="text" id="studentName" class="form-control" placeholder="請輸入姓名">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
             </div>
 
-            <button class="btn btn-submit" style="width: 100%" onclick="startQuiz()">開始測驗</button>
+            <div class="quiz-content" id="quizArea">
+                <div id="questionTag" class="question-tag tag-basic">基礎題</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options-grid" id="optionsContainer"></div>
+                <div class="feedback-section" id="feedbackSection">
+                    <span class="explanation-title" id="feedbackTitle"></span>
+                    <div id="explanationText"></div>
+                </div>
+            </div>
+
+            <div class="result-screen" id="resultArea">
+                <div class="score-circle" id="finalScore">0</div>
+                <h3 id="scoreMessage"></h3>
+                <p id="uploadStatus" style="color: #7f8c8d; font-size: 0.9rem;">資料上傳中...</p>
+                <button class="btn btn-submit" onclick="location.reload()">重新挑戰</button>
+            </div>
+
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px;">成績上傳中，請稍候...</p>
+            </div>
+
+            <div class="footer-controls" id="footerControls">
+                <span id="questionCounter"></span>
+                <div>
+                    <button class="btn btn-submit" id="submitBtn" onclick="submitAnswer()">送出答案</button>
+                    <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">下一題 ➔</button>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-    </div>
-
-    <div class="quiz-content" id="quizArea">
-        <div id="questionTag" class="question-tag tag-basic">基礎題</div>
-        <div class="question-text" id="questionText"></div>
-        <div class="options-grid" id="optionsContainer"></div>
-        <div class="feedback-section" id="feedbackSection">
-            <span class="explanation-title" id="feedbackTitle"></span>
-            <div id="explanationText"></div>
-        </div>
-    </div>
-
-    <div class="result-screen" id="resultArea">
-        <div class="score-circle" id="finalScore">0</div>
-        <h3 id="scoreMessage"></h3>
-        <p id="uploadStatus" style="color: #7f8c8d; font-size: 0.9rem;">資料上傳中...</p>
-        <button class="btn btn-submit" onclick="location.reload()">重新挑戰</button>
-    </div>
-
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-        <p style="margin-top: 15px;">成績上傳中，請稍候...</p>
-    </div>
-
-    <div class="footer-controls" id="footerControls">
-        <span id="questionCounter"></span>
-        <div>
-            <button class="btn btn-submit" id="submitBtn" onclick="submitAnswer()">送出答案</button>
-            <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">下一題 ➔</button>
-        </div>
-    </div>
-</div>
 
 <script>
     // ============================================
-    // ⚠️ 設定區：請將下方的網址換成你的 Apps Script 網址
+    // ⚠️ 設定區：Google Apps Script 網址
     // ============================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOZThYvU2D2JjnvvNt35CVzkN06jWfkxkmNGsNkntrE2oJLlW9mulmfgf-ozi_Fm6OTw/exec"; 
-    // 例如: "https://script.google.com/macros/s/AKfycbx.../exec"
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOZThYvU2D2JjnvvNt35CVzkN06jWfkxkmNGsNkntrE2oJLlW9mulmfgf-ozi_Fm6OTw/exec";
 
     // 題目資料庫
     const questions = [
@@ -262,7 +371,7 @@
     let score = 0;
     let selectedOption = null;
     let studentData = {};
-    let answerResults = []; // 儲存每題對錯 [true, false, true...]
+    let answerResults = [];
 
     // 初始化：產生個位數選項
     const unitSelect = document.getElementById('seatUnits');
@@ -341,10 +450,8 @@
         const buttons = document.querySelectorAll('.option-btn');
         const isCorrect = (selectedOption === qData.ans);
         
-        // 紀錄對錯
         answerResults.push(isCorrect);
 
-        // UI 回饋
         buttons[qData.ans].classList.add('correct');
         if (isCorrect) {
             score++;
@@ -387,17 +494,10 @@
         document.getElementById('finalScore').textContent = score;
         document.getElementById('scoreMessage').textContent = score === 15 ? "太神了！全對！" : "測驗完成！";
 
-        // 準備上傳
         uploadData();
     }
 
     function uploadData() {
-        if (SCRIPT_URL.includes("你的_GOOGLE_SCRIPT")) {
-            document.getElementById('uploadStatus').textContent = "⚠️ 錯誤：未設定 Google Script 網址，無法記錄成績。";
-            alert("請老師檢查程式碼中的 SCRIPT_URL 設定。");
-            return;
-        }
-
         document.getElementById('loadingOverlay').style.display = 'flex';
 
         const payload = {
@@ -405,20 +505,19 @@
             seatNo: studentData.seat,
             userName: studentData.name,
             score: score,
-            results: answerResults // 陣列：包含每題的 true/false
+            results: answerResults
         };
 
-        // 使用 fetch 送出 POST 請求
         fetch(SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify(payload),
-            mode: 'no-cors', // 關鍵：避免 CORS 錯誤
+            mode: 'no-cors',
             headers: {
                 'Content-Type': 'text/plain;charset=utf-8'
             }
         }).then(() => {
             document.getElementById('loadingOverlay').style.display = 'none';
-            document.getElementById('uploadStatus').innerHTML = "✅ 成績已成功上傳至老師的紀錄表！";
+            document.getElementById('uploadStatus').innerHTML = "✅ 成績已成功上傳至紀錄表！";
             document.getElementById('uploadStatus').style.color = "#27ae60";
             document.getElementById('uploadStatus').style.fontWeight = "bold";
         }).catch(err => {
