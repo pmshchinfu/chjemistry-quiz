@@ -15,20 +15,28 @@
         .header-banner h1 { margin: 0; letter-spacing: 5px; font-size: 24px; }
         .container { display: flex; margin-top: 70px; }
         
-        /* 側邊欄修正：按鈕依序排列，不強制置底 */
+        /* 側邊欄樣式 */
         .sidebar { width: 220px; background: var(--dark); padding: 40px 15px; height: calc(100vh - 70px); position: fixed; top: 70px; display: flex; flex-direction: column; gap: 12px; z-index: 1000; overflow-y: auto; }
         .sidebar button { padding: 15px; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; text-align: left; font-size: 15px; transition: 0.3s; width: 100%; flex-shrink: 0; }
         .sidebar button.active { background: var(--primary); border: 2px solid white; }
         
+        /* 主內容區 */
         .main-content { margin-left: 250px; padding: 40px; flex-grow: 1; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .quiz-card { background: white; width: 100%; max-width: 650px; padding: 35px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); text-align: center; }
+        
+        /* 表單元件 */
         .form-group { text-align: left; margin-bottom: 20px; }
         select, input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
         .seat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .calc-input { width: 85px; text-align: center; border: 1px solid #999; border-radius: 4px; padding: 6px; }
+        
+        /* 反饋區塊 */
         #feedback-box { display: none; margin-top: 20px; padding: 20px; border-radius: 10px; text-align: left; }
         .fb-correct { background: #d4edda; border: 2px solid #28a745; color: #155724; }
         .fb-wrong { background: #f8d7da; border: 2px solid #dc3545; color: #721c24; }
+        
+        /* 計算步驟區 */
+        .calc-area { background: #fdf6e3; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 5px solid #b58900; line-height: 1.8; }
         .review-list { text-align: left; margin-top: 20px; padding: 15px; background: #fffefe; border-radius: 8px; border: 1px solid #e0e0e0; }
     </style>
 </head>
@@ -85,7 +93,10 @@
 </div>
 
 <script>
+    // 您的 Google Apps Script 網址
     const script_url = "https://script.google.com/macros/s/AKfycbzXkjCD4jdQRzLPrfYahplJ4PaNQi42_glFiugwvO9VCoydokImjFq01yGyl76QxkQ/exec";
+    
+    // 題庫資料
     const allUnits = [
         {
             name: "原子量與分子量",
@@ -202,13 +213,37 @@
         document.getElementById('quiz-box').style.display='none';
         document.getElementById('result-box').style.display='block';
         document.getElementById('score-display').innerText = score;
+        
         if(errorNotes.length > 0) {
             document.getElementById('error-review').style.display = 'block';
             document.getElementById('error-items').innerHTML = errorNotes.map(n => `<li>${n}</li>`).join("");
         }
+        
         const seatNo = (parseInt(document.getElementById('no-ten').value) * 10 + parseInt(document.getElementById('no-one').value)).toString().padStart(2, '0');
-        const params = new URLSearchParams({ quiz: allUnits[currentUnit].name, class: document.getElementById('user-class').value, no: seatNo, name: document.getElementById('user-name').value, score: score, details: detailLog.join(",") });
-        fetch(`${script_url}?${params.toString()}`, { method: 'GET', mode: 'no-cors' }).then(() => document.getElementById('upload-status').innerText = "✅ 成績已登錄");
+        
+        // --- 關鍵修正：判斷當前單元並設定對應的分項分數 ---
+        let s1 = 0, s2 = 0, s3 = 0;
+        if(currentUnit === 0) s1 = score; // 如果做的是 Unit 0，分數計入 s1
+        if(currentUnit === 1) s2 = score; // 如果做的是 Unit 1，分數計入 s2
+        if(currentUnit === 2) s3 = score; // 如果做的是 Unit 2，分數計入 s3
+
+        const params = new URLSearchParams({ 
+            quiz: allUnits[currentUnit].name, 
+            class: document.getElementById('user-class').value, 
+            no: seatNo, 
+            name: document.getElementById('user-name').value, 
+            score: score, 
+            // 傳送分項成績參數
+            s1: s1,
+            s2: s2,
+            s3: s3,
+            details: detailLog.join(",") 
+        });
+
+        fetch(`${script_url}?${params.toString()}`, { method: 'GET', mode: 'no-cors' }).then(() => {
+            document.getElementById('upload-status').innerText = "✅ 成績已成功歸位並登錄！";
+            document.getElementById('upload-status').style.color = "#27ae60";
+        });
     }
 </script>
 </body>
