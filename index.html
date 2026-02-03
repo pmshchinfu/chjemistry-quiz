@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>鍾青府老師 - 國中理化數位學習網</title>
+    <title>鍾青府老師 - 國中理化、資訊數位學習網</title>
     <style>
         :root { 
             --p1: #2980b9; 
             --p2: #27ae60; 
             --p3: #d35400; 
             --p4: #8e44ad; 
-            --p5: #e67e22; /* 新增：自然競賽區塊的主題橘色 */
+            --p5: #e67e22; 
+            --p6: #34495e; /* 新增：Python 程式設計區塊的主題顏色 */
             --dark: #2c3e50; 
         }
         body { font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif; background: #f0f3f5; margin: 0; padding: 20px; }
@@ -21,12 +22,13 @@
         .vol-card:hover { transform: translateY(-5px); }
         .vol-card h2 { margin: 0; padding: 15px; color: white; text-align: center; font-size: 1.2em; }
         
-        /* 五個區塊顏色區分 */
+        /* 區塊顏色區分 */
         .v1 { background: var(--p1); } 
         .v2 { background: var(--p2); }
         .v3 { background: var(--p3); } 
         .v4 { background: var(--p4); }
-        .v5 { background: var(--p5); } /* 自然競賽顏色 */
+        .v5 { background: var(--p5); }
+        .v6 { background: var(--p6); }
 
         .chapter-list { list-style: none; padding: 15px; margin: 0; display: grid; grid-template-columns: 1fr; gap: 10px; }
         .chapter-list li a { 
@@ -39,13 +41,13 @@
         .chapter-list li a.disabled { background: #eee; color: #aaa; cursor: not-allowed; border: 1px dashed #ccc; }
         .chapter-list li a.disabled:hover { box-shadow: none; transform: none; }
 
-        .tag { font-size: 0.7em; padding: 2px 6px; border-radius: 4px; margin-right: 10px; background: #eee; color: #666; width: 45px; text-align: center; }
+        .tag { font-size: 0.7em; padding: 2px 6px; border-radius: 4px; margin-right: 10px; background: #eee; color: #666; width: 55px; text-align: center; flex-shrink: 0; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>普門中學理化數位教室</h1>
+        <h1>普門中學理化、資訊數位教室</h1>
         <p>授課師：鍾青府老師</p>
     </div>
 
@@ -89,6 +91,19 @@
             <ul class="chapter-list">
                 <li><a href="c921/index.html" class="disabled"><span class="tag">c921</span>1. 電的應用</a></li>
                 <li><a href="c922/index.html" class="disabled"><span class="tag">c922</span>2. 電磁效應</a></li>
+            </ul>
+        </div>
+
+        <div class="vol-card">
+            <h2 class="v6">Python 程式設計</h2>
+            <ul class="chapter-list">
+                <li><a href="python/ch01/index.html"><span class="tag">Python</span>環境與基礎</a></li>
+                <li><a href="python/ch02/index.html"><span class="tag">Python</span>基礎語法</a></li>
+                <li><a href="python/ch03/index.html"><span class="tag">Python</span>資料處理</a></li>
+                <li><a href="python/ch04/index.html"><span class="tag">Python</span>容器資料</a></li>
+                <li><a href="python/ch05/index.html"><span class="tag">Python</span>進階邏輯</a></li>
+                <li><a href="python/ch06/index.html"><span class="tag">Python</span>函數應用</a></li>
+                <li><a href="python/ch07/index.html"><span class="tag">Python</span>進階實務</a></li>
             </ul>
         </div>
 
