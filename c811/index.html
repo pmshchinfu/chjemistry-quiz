@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1章 基本測量 - 鍾青府老師</title>
+    <style>
+        :root { --primary: #2980b9; --dark: #2c3e50; --bg: #f4f7f6; --banner: #34495e; --accent: #e67e22; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* 橫幅 */
+        .header-banner { background: var(--banner); color: white; padding: 15px; text-align: center; position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); height: 30px; line-height: 30px; }
+        .header-banner h1 { margin: 0; font-size: 22px; letter-spacing: 2px; }
+
+        .container { display: flex; margin-top: 60px; height: calc(100vh - 60px); }
+        
+        /* 左側欄 */
+        .sidebar { width: 220px; background: var(--dark); padding: 30px 15px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; }
+        
+        /* 左側欄最上方文字 */
+        .sidebar-title { color: #ecf0f1; font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #7f8c8d; padding-bottom: 10px; }
+        
+        /* 按鈕樣式 */
+        .sidebar button { padding: 15px; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; text-align: left; background: rgba(255,255,255,0.1); width: 100%; font-size: 16px; transition: 0.3s; }
+        .sidebar button:hover { background: var(--primary); transform: translateX(5px); }
+        
+        /* 特別強調複習按鈕 */
+        .btn-review { background: var(--primary) !important; border-left: 5px solid #85c1e9 !important; }
+        
+        /* 回首頁按鈕 */
+        .btn-home { background: var(--accent) !important; margin-top: auto; }
+
+        /* 右側施工中區域 */
+        .main-content { flex-grow: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ecf0f1; }
+        
+        .construction-card { background: white; padding: 60px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; max-width: 600px; animation: fadeIn 0.8s ease-out; }
+        
+        .icon { font-size: 80px; margin-bottom: 20px; display: block; animation: bounce 2s infinite; }
+        
+        h2 { color: var(--dark); margin: 10px 0; font-size: 32px; }
+        p { color: #7f8c8d; font-size: 18px; line-height: 1.6; }
+
+        /* 動畫 */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
+
+    </style>
+</head>
+<body>
+
+<div class="header-banner"><h1>國二理化 第1章</h1></div>
+
+<div class="container">
+    <div class="sidebar">
+        <div class="sidebar-title">基本測量</div>
+        
+        <button onclick="showConstruction('1-1 進入實驗室')">🧪 進入實驗室</button>
+        <button onclick="showConstruction('1-2 長度、體積、質量')">📏 長度、體積、質量</button>
+        <button onclick="showConstruction('1-3 密度')">🧊 密度</button>
+        
+        <button class="btn-review" onclick="location.href='c811_all/index.html'">📝 第1章複習 (綜合測驗)</button>
+        
+        <button class="btn-home" onclick="location.href='../index.html'">🏠 回首頁</button>
+    </div>
+
+    <div class="main-content">
+        <div class="construction-card">
+            <span class="icon">🚧</span>
+            <h2 id="status-title">施工中…</h2>
+            <p>本單元課程內容正在建置中，<br>請先點選左側「第1章複習」進行測驗。</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 簡單的互動：點擊前三個按鈕時，更新右側文字，讓畫面有點反應
+    function showConstruction(title) {
+        document.getElementById('status-title').innerText = title + " 建置中";
+        const icon = document.querySelector('.icon');
+        icon.innerText = "⚙️"; // 改變圖示
+        
+        // 重置動畫
+        icon.style.animation = 'none';
+        icon.offsetHeight; /* trigger reflow */
+        icon.style.animation = 'spin 2s linear infinite';
+    }
+    
+    // 增加一個旋轉動畫樣式給 JavaScript 使用
+    const style = document.createElement('style');
+    style.innerHTML = `@keyframes spin { 100% { transform: rotate(360deg); } }`;
+    document.head.appendChild(style);
+</script>
+
+</body>
+</html>
