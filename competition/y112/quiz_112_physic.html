@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>112學年度高雄市自然科競賽 - 物理筆試</title>
+    <style>
+        body { font-family: "Microsoft JhengHei", sans-serif; line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; }
+        .quiz-container { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { color: #1a365d; text-align: center; margin-bottom: 5px; }
+        h3 { text-align: center; color: #7f8c8d; margin-bottom: 30px; font-weight: normal; }
+        h2 { border-left: 6px solid #3498db; padding-left: 15px; color: #2c3e50; margin-top: 40px; background: #f8f9fa; padding-top: 5px; padding-bottom: 5px; }
+        .question { margin-bottom: 45px; padding: 25px; border: 1px solid #dee2e6; border-radius: 12px; background: #fff; position: relative; }
+        .q-text { font-size: 17px; margin-bottom: 15px; white-space: pre-wrap; }
+        .diagram { margin: 20px 0; text-align: center; }
+        .diagram img { max-width: 100%; height: auto; border: 1px solid #eee; border-radius: 5px; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        button.option-btn { padding: 15px; text-align: left; border: 2px solid #e9ecef; border-radius: 10px; background: #fff; cursor: pointer; transition: 0.2s; font-size: 16px; line-height: 1.4; }
+        button.option-btn:hover { border-color: #3498db; background: #f0f7ff; }
+        .feedback { margin-top: 20px; padding: 20px; border-radius: 10px; display: none; line-height: 1.8; border-left: 6px solid; }
+        .correct { background: #e6fffa; color: #234e52; border-color: #38b2ac; }
+        .incorrect { background: #fff5f5; color: #822727; border-color: #e53e3e; }
+        .math-box { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-family: "Times New Roman", serif; padding: 0 5px; }
+        .num { border-bottom: 1px solid #000; padding: 0 8px; }
+        .den { padding: 0 8px; }
+        .calc-btn-container { text-align: center; margin-top: 20px; }
+        .calc-btn { background: #2c3e50; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+        .calc-btn:hover { background: #34495e; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>112學年度高雄市國民中學自然科競賽</h1>
+    <h3>物理筆試試題</h3>
+
+    <h2>一、單選題 (每題10%,總共80%,答錯不倒扣)</h2>
+
+    <div id="quiz-area"></div>
+
+    <h2>二、計算題 (總共20%,計算過程須詳細列式與說明)</h2>
+    <div class="question">
+        <p class="q-text">1. 有一輛電動車的質量為1500kg，使用400伏特的電池作為動力來源。起初當它在水平路面上以固定時速72公里行駛時，所使用的電流為15安培。經過一段時間後，此車遭遇一道與水平面夾30°角的斜坡，並以時速36公里沿斜坡路面向上行進。若水平路面與斜坡路面的摩擦係數相同，重力加速度為 10 m/s²，且空氣阻力可被忽略，則</p>
+        <p>(a) 路面的摩擦係數為多少?(10%)</p>
+        <p>(b) 此車沿斜坡路面向上行進時，所使用的電流為多少安培? (10%)</p>
+        <div class="calc-btn-container">
+            <button class="calc-btn" onclick="showCalc()">點擊查看計算題詳細解答</button>
+        </div>
+        <div id="fb-calc" class="feedback"></div>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            text: "1.如下圖,在光滑水平面上,質量分別為M與m的兩物體緊靠在一起。今以水平力 F₁ 與 F₂ 分別作用於物體上,則二物體之間的作用力大小為多少?",
+            img: "p1.jpg",
+            options: [
+                "(A) F₁ - F₂",
+                "(B) |(M-m)·(F₁-F₂)| / (M+m)",
+                "(C) (M·F₁ + m·F₂) / (M+m)",
+                "(D) (m·F₁ + M·F₂) / (M+m)"
+            ],
+            correct: 3,
+            explain: "1. 求系統加速度：a = (F₁ - F₂) / (M + m) [cite: 1, 5, 7]。<br>2. 考慮 m 物體受力：N - F₂ = m · a。<br>3. 代入 a 整理：N = F₂ + m(F₁ - F₂)/(M+m) = (m·F₁ + M·F₂)/(M+m) [cite: 1, 7]。"
+        },
+        {
+            text: "2.質量為m與2m的兩顆小球之間的距離為d,並分別帶有q與-q的電量。若此二小球繞著其共同質心轉動,重力可以忽略不計,且庫侖常數為k,則質量為m的小球之動能為",
+            options: [
+                "(A) (k·q²)/d",
+                "(B) (k·q²)/2d",
+                "(C) (k·q²)/3d",
+                "(D) (k·q²)/4d"
+            ],
+            correct: 2,
+            explain: "1. 庫侖力提供向心力：F = k·q²/d² [cite: 1, 12, 13]。<br>2. m 到質心距離 r₁ = (2/3)d。<br>3. k·q²/d² = m·v²/r₁ → 1/2 m·v² = (k·q²)/3d [cite: 1, 13]。"
+        },
+        {
+            text: "3.如下圖,一觀察者眼前80cm處的上方有一鉛直懸掛,長度40cm的平面鏡。若眼睛後方 120 cm 處的鉛直牆面上有一小亮點從高處以4cm/s的固定速率向下移動,則此人在平面鏡中見到小亮點虛像的時間有多少秒?",
+            img: "p3.jpg",
+            options: [
+                "(A) 15",
+                "(B) 25",
+                "(C) 35",
+                "(D) 50"
+            ],
+            correct: 1,
+            explain: "1. 牆上可見範圍 H = 鏡長 × (鏡眼距 + 牆眼距) / 鏡眼距 [cite: 1, 14, 20]。<br>2. H = 40 × (80 + 120) / 80 = 100 cm。<br>3. 時間 t = 100 / 4 = 25 秒 [cite: 1, 14, 21]。"
+        },
+        {
+            text: "4.假設空氣密度在溫度 27°C 時為 1.2 kg/m³。今欲使一個體積 3 m³,質量400g的天燈升空,試求天燈內的空氣所需的最低溫度最接近下列哪一個答案?",
+            options: [
+                "(A) 65°C",
+                "(B) 85°C",
+                "(C) 125°C",
+                "(D) 305°C"
+            ],
+            correct: 1,
+            explain: "1. 升空條件：浮力 > 天燈重 + 內部空氣重 [cite: 1, 22]。<br>2. 浮力 B = 1.2 × 3 × 10 = 36 N。<br>3. 36 > 4 + 30ρ_內 → ρ_內 < 1.067 kg/m³。<br>4. 由理想氣體定律計算溫度，最接近 85°C [cite: 1, 22]。"
+        },
+        {
+            text: "5.若有一顆「人造衛星」繞地球進行圓周運動,則下列敘述何者不正確?",
+            options: [
+                "(A) 人造衛星飛行的速度不斷改變",
+                "(B) 人造衛星飛行的高度愈高,所需的向心力愈大",
+                "(C) 人造衛星飛行的高度愈高,繞行的速率愈慢",
+                "(D) 人造衛星飛行的高度愈高,位能愈大"
+            ],
+            correct: 1,
+            explain: "向心力由萬有引力提供 (F = GMm/r²)。高度越高 (r越大)，向心力越小 [cite: 1, 23]。"
+        },
+        {
+            text: "6.若有一顆雨滴在空中同時受到重力與空氣阻力,並以固定速度向下墜落,則下列敘述何者不正確?",
+            options: [
+                "(A) 重力作正功,且雨滴的重力位能減少",
+                "(B) 空氣阻力不作功,且雨滴重力位能減少",
+                "(C) 重力作正功,且雨滴動能不變",
+                "(D) 合力對雨滴作功為0,且雨滴動能不變"
+            ],
+            correct: 1,
+            explain: "空氣阻力方向與運動方向相反，作負功，而非不作功 [cite: 1, 25, 26]。"
+        },
+        {
+            text: "7.關於磁鐵的性質,下列敘述何者不正確?",
+            options: [
+                "(A) 磁鐵的磁性會隨溫度上升而減弱",
+                "(B) 帶電的粒子有可能會受到磁鐵的作用力",
+                "(C) 棒狀磁鐵對外磁力最強的位置在其兩端,而不是在棒中心",
+                "(D) 具有N極與S極於兩端的棒狀磁鐵斷成兩半後,其中一塊形成N極磁鐵,另一塊形成S極磁鐵"
+            ],
+            correct: 3,
+            explain: "磁鐵斷裂後，每一段仍會同時具備 N 極與 S 極，無法分離 [cite: 1, 27, 28]。"
+        },
+        {
+            text: "8.在學校裡面,我們不容易看到隔壁教室發出的燈光,卻經常能夠聽到隔壁教室傳來的聲音,主要是由於下列哪一項因素?",
+            options: [
+                "(A) 聲波的波長遠大於光波的波長,比較容易繞射",
+                "(B) 光具有電磁波的性質,但聲波屬於力學波",
+                "(C) 聲波的能量較強,可以穿透牆壁",
+                "(D) 光波的性質為橫波,但聲波則為縱波"
+            ],
+            correct: 0,
+            explain: "波長越長繞射現象越顯著。聲波波長遠大於光波波長 [cite: 1, 29]。"
+        }
+    ];
+
+    function renderQuiz() {
+        const area = document.getElementById('quiz-area');
+        questions.forEach((q, i) => {
+            let imgHTML = q.img ? `<div class="diagram"><img src="${q.img}" alt="圖示"></div>` : "";
+            area.innerHTML += `
+                <div class="question">
+                    <div class="q-text">${q.text}</div>
+                    ${imgHTML}
+                    <div class="options-grid">
+                        ${q.options.map((opt, oi) => `<button class="option-btn" onclick="check(${i}, ${oi})">${opt}</button>`).join('')}
+                    </div>
+                    <div id="fb-${i}" class="feedback"></div>
+                </div>
+            `;
+        });
+    }
+
+    function check(qi, oi) {
+        const fb = document.getElementById(`fb-${qi}`);
+        fb.style.display = "block";
+        const isCorrect = oi === questions[qi].correct;
+        fb.className = isCorrect ? "feedback correct" : "feedback incorrect";
+        fb.innerHTML = (isCorrect ? "<b>✓ 正確！</b>" : "<b>✘ 錯誤！</b>") + "<br>" + questions[qi].explain;
+    }
+
+    function showCalc() {
+        const fb = document.getElementById('fb-calc');
+        fb.style.display = "block";
+        fb.className = "feedback correct";
+        fb.innerHTML = `
+            <b>(a) 摩擦係數計算：</b><br>
+            1. P = IV = 15 × 400 = 6000 W [cite: 1, 31]。<br>
+            2. 定速時牽引力等於阻力 F = f = μmg。<br>
+            3. v = 72 km/h = 20 m/s。<br>
+            4. P = Fv = μmgv → 6000 = μ(1500 × 10)(20) → <b>μ = 0.02</b>。<br><br>
+            <b>(b) 斜坡電流計算：</b><br>
+            1. 斜坡速度 v' = 36 km/h = 10 m/s [cite: 1, 31]。<br>
+            2. 向上牽引力 F' = mg sin30° + μmg cos30°。<br>
+            3. F' = 15000(0.5) + 0.02(15000)(0.866) = 7500 + 259.8 ≈ 7759.8 N。<br>
+            4. P' = F'v' = 77598 W。<br>
+            5. I = P' / V = 77598 / 400 = <b>194 安培</b> [cite: 1, 32]。
+        `;
+    }
+
+    renderQuiz();
+</script>
+
+</body>
+</html>
