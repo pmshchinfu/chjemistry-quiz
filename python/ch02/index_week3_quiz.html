@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Python 基礎能力即時評量</title>
+    <style>
+        body { font-family: "Microsoft JhengHei", sans-serif; background-color: #f8f9fa; color: #333; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        
+        /* 狀態列 */
+        .info-bar { display: flex; justify-content: space-between; align-items: center; background: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; position: sticky; top: 10px; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .score-display { font-size: 1.2em; color: #e74c3c; font-weight: bold; }
+        
+        /* 登入區 */
+        #login-section { text-align: center; }
+        .login-input { margin: 15px 0; text-align: left; }
+        .seat-group { display: flex; gap: 10px; }
+
+        /* 題目區 */
+        #quiz-section { display: none; }
+        .question-card { background: #fff; border: 1px solid #dee2e6; border-radius: 10px; padding: 20px; margin-bottom: 30px; }
+        .question-text { font-size: 1.1em; font-weight: bold; margin-bottom: 15px; color: #2c3e50; }
+        .options label { display: block; background: #f1f3f5; margin: 8px 0; padding: 12px; border-radius: 8px; cursor: pointer; }
+        .options label:hover { background: #e9ecef; }
+        
+        /* 按鈕 */
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1em; transition: 0.3s; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-check { background: #27ae60; color: white; margin-top: 10px; width: 100%; }
+        .btn:disabled { background: #adb5bd; cursor: not-allowed; }
+
+        /* 回饋區 */
+        .feedback { margin-top: 15px; padding: 15px; border-radius: 8px; display: none; font-weight: bold; }
+        .correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .explanation { font-size: 0.9em; margin-top: 10px; color: #666; line-height: 1.6; border-top: 1px solid #eee; padding-top: 10px; }
+        
+        input[type="text"], select { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 5px; box-sizing: border-box; }
+        #final-msg { text-align: center; display: none; padding: 20px; color: #27ae60; font-weight: bold; font-size: 1.2em; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Python 基礎能力即時評量</h1>
+
+    <div id="login-section">
+        <div class="login-input">
+            <label>班級：</label>
+            <select id="s-class">
+                <option value="高一忠">高一忠</option>
+                <option value="高一孝">高一孝</option>
+            </select>
+        </div>
+        <div class="login-input">
+            <label>座號：</label>
+            <div class="seat-group">
+                <select id="s-tens"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+                <select id="s-ones"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select>
+            </div>
+        </div>
+        <div class="login-input">
+            <label>姓名：</label>
+            <input type="text" id="s-name" placeholder="請輸入姓名">
+        </div>
+        <button class="btn btn-primary" style="width:100%; margin-top: 20px;" onclick="startQuiz()">開始測驗</button>
+    </div>
+
+    <div id="quiz-section">
+        <div class="info-bar">
+            <div id="student-display" style="font-weight: bold;"></div>
+            <div class="score-display">累積得分：<span id="current-score">0</span></div>
+        </div>
+        <div id="quiz-container"></div>
+        <div id="final-msg">🎉 測驗已完成，成績已自動同步至 Google Sheet！</div>
+    </div>
+</div>
+
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwHpt3MXmZ7wVIk2tDtvkO3ZtiAlqAr81yNv89DWbBasqBhBqAO7Duvn5NRyuurPIuOgA/exec";
+let totalScore = 0;
+let answeredCount = 0;
+
+const quizData = [
+    { type: "choice", q: "Python 標誌上的卡通圖案是什麼動物？", options: ["大象", "蟒蛇", "企鵝", "海豚"], a: 1, exp: "Python 意即大蟒蛇，標誌是以兩隻卡通蟒蛇組成。" },
+    { type: "choice", q: "下列關於 Python 特點的敘述，何者錯誤？", options: ["容易上手", "擴展性強", "執行前需手動編譯成機器碼", "應用廣泛"], a: 2, exp: "Python 是直譯式語言，不需要預先編譯成機器碼即可執行。" },
+    { type: "choice", q: "在 Spyder 中，哪一個視窗可以用來即時檢視變數的名稱、型別與數值？", options: ["Editor", "IPython Console", "Variable Explorer", "Help"], a: 2, exp: "Variable Explorer (變數檢視器) 能顯示目前程式中所有的變數狀態。" },
+    { type: "choice", q: "下列哪一個變數名稱是不合法的？", options: ["student_name", "5cats", "average_score", "_data"], a: 1, exp: "Python 變數開頭第一個字元不能是數字。" },
+    { type: "choice", q: "Python 對於識別字的大小寫是否有所區分？", options: ["是 (cat 與 Cat 不同)", "否 (cat 與 Cat 相同)"], a: 0, exp: "Python 嚴格區分大小寫。" },
+    { type: "fill", q: "在 Python 中，想要印出內容的函數名稱為何？", a: "print", exp: "print() 是最基礎的輸出函數。" },
+    { type: "choice", q: "計算「3 的 2 次方」，應使用哪一個運算子？", options: ["^", "*", "**", "%"], a: 2, exp: "** 代表次方運算，3 ** 2 = 9。" },
+    { type: "fill", q: "計算餘數的運算子符號是什麼？", a: "%", exp: "% 是求餘數運算子 (Modulo)。" },
+    { type: "choice", q: "下列哪一個是 Python 的保留字，不能作為變數名稱？", options: ["apple", "while", "total", "main"], a: 1, exp: "while 是控制迴圈的保留字，不可自定義為變數。" },
+    { type: "choice", q: "若要標示字串，文字兩端必須加上什麼？", options: ["圓括號", "引號 (單或雙)", "大括號", "方括號"], a: 1, exp: "字串必須由成對引號括起來。" },
+    { type: "fill", q: "程式碼中，單行註解使用的符號是？", a: "#", exp: "# 後方的內容會被 Python 忽略。" },
+    { type: "choice", q: "Python 強制要求相同的程式區塊（如 if 內）必須具備相同的？", options: ["顏色", "縮排", "長度", "註解"], a: 1, exp: "Python 以縮排 (Indentation) 來決定程式結構。" },
+    { type: "choice", q: "一行程式碼過長時，可以使用哪個符號來進行物理分行？", options: ["/", "\\", "|", "&"], a: 1, exp: "反斜線 \\ 可作為敘述分行符號。" },
+    { type: "choice", q: "當程式因拼錯字 (如 Print) 無法執行，這屬於哪種錯誤？", options: ["語法錯誤 (SyntaxError)", "語意錯誤 (Semantic Error)"], a: 0, exp: "不符語法規則的錯誤皆為 SyntaxError。" },
+    { type: "fill", q: "在控制台查詢print函數用法，應鍵入 ____(print)？", a: "help", exp: "help() 可呼叫內建幫助系統。" },
+    { type: "choice", q: "慣例上，Python 的「常數」名稱會如何書寫？", options: ["全小寫", "全大寫", "底線開頭", "駝峰式"], a: 1, exp: "全大寫（如 PI）是約定俗成的常數命名規範。" },
+    { type: "choice", q: "為了增加可讀性，運算子（如 +）兩邊建議加上？", options: ["逗號", "空格", "括號", "引號"], a: 1, exp: "適度留白能增加程式碼清晰度。" },
+    { type: "choice", q: "在 Spyder 編輯器中執行程式的快捷鍵通常是？", options: ["F1", "F5", "F12", "Esc"], a: 1, exp: "F5 是 Spyder 的預設執行鍵。" },
+    { type: "fill", q: "若 a = 10, b = 3，則 a / b 的結果型別簡稱為？", a: "float", exp: "除法運算的結果通常會轉為浮點數 (float)。" },
+    { type: "choice", q: "下列何者是 Python 的布林值 (Boolean) 保留字？", options: ["True", "Yes", "Right", "Ok"], a: 0, exp: "True 與 False 是 Python 的布林值。" }
+];
+
+function startQuiz() {
+    const name = document.getElementById('s-name').value.trim();
+    if(!name) { alert("請輸入姓名！"); return; }
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('quiz-section').style.display = 'block';
+    
+    const info = `${document.getElementById('s-class').value} ${document.getElementById('s-tens').value}${document.getElementById('s-ones').value} 號 ${name}`;
+    document.getElementById('student-display').innerText = info;
+    renderQuestions();
+}
+
+function renderQuestions() {
+    const container = document.getElementById('quiz-container');
+    quizData.forEach((item, i) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.innerHTML = `<div class="question-text">${i+1}. ${item.q}</div>`;
+
+        if(item.type === 'choice') {
+            const opts = document.createElement('div');
+            opts.className = 'options';
+            item.options.forEach((opt, oi) => {
+                opts.innerHTML += `<label><input type="radio" name="r${i}" value="${oi}"> ${opt}</label>`;
+            });
+            card.appendChild(opts);
+        } else {
+            card.innerHTML += `<input type="text" id="ans${i}" placeholder="請在此輸入答案...">`;
+        }
+
+        card.innerHTML += `<button class="btn btn-check" id="btn${i}" onclick="checkAnswer(${i})">檢查答案</button>
+                           <div id="fb${i}" class="feedback"></div>
+                           <div id="ex${i}" class="explanation" style="display:none;"></div>`;
+        container.appendChild(card);
+    });
+}
+
+function checkAnswer(idx) {
+    const item = quizData[idx];
+    const fb = document.getElementById(`fb${idx}`);
+    const ex = document.getElementById(`ex${idx}`);
+    const btn = document.getElementById(`btn${idx}`);
+    let isCorrect = false;
+
+    if(item.type === 'choice') {
+        const selected = document.querySelector(`input[name="r${idx}"]:checked`);
+        if(!selected) { alert("請選擇一個選項！"); return; }
+        if(parseInt(selected.value) === item.a) isCorrect = true;
+        document.querySelectorAll(`input[name="r${idx}"]`).forEach(el => el.disabled = true);
+    } else {
+        const input = document.getElementById(`ans${idx}`);
+        if(!input.value.trim()) { alert("請輸入答案！"); return; }
+        if(input.value.trim().toLowerCase() === item.a.toLowerCase()) isCorrect = true;
+        input.disabled = true;
+    }
+
+    btn.disabled = true;
+    fb.style.display = 'block';
+    ex.style.display = 'block';
+    ex.innerHTML = `<strong>詳解：</strong>${item.exp}`;
+
+    if(isCorrect) {
+        totalScore += 5;
+        fb.className = 'feedback correct';
+        fb.innerText = "✅ 答對了！累積 +5 分";
+    } else {
+        fb.className = 'feedback wrong';
+        const correctTxt = item.type === 'choice' ? item.options[item.a] : item.a;
+        fb.innerText = `❌ 答錯了。正確答案是：${correctTxt}`;
+    }
+    
+    document.getElementById('current-score').innerText = totalScore;
+    answeredCount++;
+
+    // 判斷是否全部做完
+    if(answeredCount === quizData.length) {
+        uploadData();
+    }
+}
+
+function uploadData() {
+    const sClass = document.getElementById('s-class').value;
+    const sNo = document.getElementById('s-tens').value + document.getElementById('s-ones').value;
+    const sName = document.getElementById('s-name').value;
+
+    const payload = {
+        sClass: sClass,
+        sNo: sNo,
+        sName: sName,
+        score: totalScore
+    };
+
+    fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        mode: 'no-cors'
+    }).then(() => {
+        document.getElementById('final-msg').style.display = 'block';
+        window.scrollTo(0, document.body.scrollHeight);
+    }).catch(err => {
+        console.error("上傳失敗", err);
+        alert("網路連線異常，成績上傳失敗。");
+    });
+}
+</script>
+</body>
+</html>
