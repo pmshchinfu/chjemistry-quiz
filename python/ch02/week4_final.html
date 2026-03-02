@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>Python 基礎語法總結測驗</title>
+    <style>
+        :root { --primary: #0984e3; --bg: #f5f6fa; --dark: #2d3436; }
+        body { font-family: 'Microsoft JhengHei', sans-serif; background: var(--bg); padding: 20px; color: #2d3436; }
+        .container { max-width: 850px; margin: auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: var(--primary); margin-bottom: 30px; }
+        
+        /* 學生資訊欄 */
+        .info-section { display: flex; gap: 20px; background: #e3f2fd; padding: 25px; border-radius: 12px; margin-bottom: 35px; align-items: center; flex-wrap: wrap; border: 1px solid #74b9ff; }
+        .info-item { display: flex; align-items: center; gap: 8px; font-weight: bold; }
+        select, input[type="text"] { padding: 8px; border-radius: 5px; border: 1px solid #b2bec3; font-size: 1em; }
+
+        /* 題目樣式 */
+        .q-card { margin-bottom: 30px; padding: 20px; border: 1px solid #eee; border-radius: 10px; transition: 0.3s; }
+        .q-card:hover { border-color: var(--primary); background: #fdfdfd; }
+        .q-title { font-weight: bold; font-size: 1.1em; margin-bottom: 15px; line-height: 1.5; }
+        .options label { display: block; padding: 10px; cursor: pointer; border-radius: 6px; margin: 5px 0; border: 1px solid transparent; }
+        .options label:hover { background: #f1f2f6; border-color: #dfe6e9; }
+        .options input { margin-right: 10px; transform: scale(1.2); }
+        code { background: #2d3436; color: #fab1a0; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; }
+
+        /* 按鈕 */
+        #submitBtn { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1.3em; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 30px; }
+        #submitBtn:hover { background: #0771c1; box-shadow: 0 5px 15px rgba(9, 132, 227, 0.3); }
+        #submitBtn:disabled { background: #b2bec3; cursor: not-allowed; }
+
+        #resultDisplay { display: none; text-align: center; padding: 30px; margin-top: 20px; border-radius: 10px; background: #edfdf1; border: 2px solid #2ecc71; }
+        .score-num { font-size: 3em; color: #27ae60; display: block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🐍 Python 基礎語法總結測驗</h1>
+    
+    <div class="info-section">
+        <div class="info-item">
+            班級：<select id="className">
+                <option value="高一忠">高一忠</option>
+                <option value="高一孝">高一孝</option>
+            </select>
+        </div>
+        <div class="info-item">
+            座號：
+            <select id="seat10"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+            <select id="seat1"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select>
+        </div>
+        <div class="info-item">
+            姓名：<input type="text" id="studentName" placeholder="請輸入姓名" style="width: 120px;">
+        </div>
+    </div>
+
+    <form id="quizForm">
+        <div id="questions"></div>
+        <button type="button" id="submitBtn" onclick="submitQuiz()">提交測驗並上傳成績</button>
+    </form>
+
+    <div id="resultDisplay">
+        <span id="finishMsg" style="font-size: 1.2em; font-weight: bold;">測驗完成！</span>
+        <span class="score-num" id="finalScore">0</span>
+        <p id="studentDetail"></p>
+        <p style="color: #666;">成績已自動同步至老師的 Google 表單中。</p>
+    </div>
+</div>
+
+<script>
+    const questionsData = [
+        { q: "在 Python 中，判斷「是否等於」應該使用哪一個符號？", a: "B", ops: ["=", "==", "!=", "is"] },
+        { q: "運算式 <code>10 != 10</code> 的結果為何？", a: "B", ops: ["True", "False", "Error", "0"] },
+        { q: "下列哪一個符號代表「大於或等於」？", a: "C", ops: ["=>", ">==", ">=", "+>"] },
+        { q: "<code>5 > 3</code> 的結果屬於哪種資料型態？", a: "D", ops: ["int", "str", "float", "bool"] },
+        { q: "程式碼 <code>print(7 <= 7)</code> 會輸出什麼？", a: "A", ops: ["True", "False", "7", "Error"] },
+        { q: "若要同時滿足兩個條件，應該使用哪一個邏輯運算子？", a: "C", ops: ["or", "not", "and", "maybe"] },
+        { q: "運算式 <code>(5 > 3) or (2 > 10)</code> 的結果為何？", a: "A", ops: ["True", "False", "0", "None"] },
+        { q: "<code>not (10 == 10)</code> 的結果為何？", a: "B", ops: ["True", "False", "10", "Error"] },
+        { q: "下列何者能正確表達「x 在 0 到 100 之間(含)」？", a: "B", ops: ["0 < x < 100", "x >= 0 and x <= 100", "x >= 0 or x <= 100", "其他錯"] },
+        { q: "<code>False and True</code> 的結果為何？", a: "B", ops: ["True", "False", "None", "Error"] },
+        { q: "Python 程式碼中，if 語句的結尾必須加上什麼符號？", a: "C", ops: [";", ".", ":", "!"] },
+        { q: "在 Python 中，用來區分「程式碼區塊」的方式是？", a: "B", ops: ["大括號 {}", "縮排 (Indentation)", "括號 ()", "關鍵字 end"] },
+        { q: "當 if 條件不成立，且沒有其他特定條件時，最後執行的區塊是？", a: "A", ops: ["else", "elif", "then", "final"] },
+        { q: "多重判斷中，「否則如果」的關鍵字縮寫是？", a: "C", ops: ["else if", "elseif", "elif", "elsif"] },
+        { q: "執行：<code>x=10\nif x>5: print('A')\nelif x>8: print('B')</code> 會印出？", a: "A", ops: ["A", "B", "A 和 B", "無"] },
+        { q: "下列何者是正確的選擇結構順序？", a: "C", ops: ["if-else-elif", "elif-if-else", "if-elif-else", "else-if-elif"] },
+        { q: "<code>score = 50</code>，執行 <code>if score >= 60: print('P') else: print('F')</code> 結果為？", a: "B", ops: ["P", "F", "Error", "50"] },
+        { q: "關於「巢狀判斷」，下列敘述何者正確？", a: "B", ops: ["效率最高", "在 if 內包含另一個 if", "Python 不支援", "只能有兩層"] },
+        { q: "判斷數字 n 是否為偶數的正確條件是？", a: "B", ops: ["n / 2 == 0", "n % 2 == 0", "n % 2 == 1", "n // 2 == 0"] },
+        { q: "程式：<code>a=5; b=10; if a>b: print('X') else: if a+5==b: print('Y') else: print('Z')</code>", a: "B", ops: ["X", "Y", "Z", "Error"] }
+    ];
+
+    // 初始化題目
+    const qContainer = document.getElementById('questions');
+    questionsData.forEach((item, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.innerHTML = `
+            <div class="q-title">${i+1}. ${item.q}</div>
+            <div class="options">
+                ${item.ops.map((opt, idx) => `
+                    <label><input type="radio" name="q${i}" value="${String.fromCharCode(65+idx)}"> ${String.fromCharCode(65+idx)}) ${opt}</label>
+                `).join('')}
+            </div>
+        `;
+        qContainer.appendChild(card);
+    });
+
+    async function submitQuiz() {
+        const name = document.getElementById('studentName').value.trim();
+        const className = document.getElementById('className').value;
+        const seatNo = document.getElementById('seat10').value + document.getElementById('seat1').value;
+
+        if (!name) { alert("請先輸入姓名！"); return; }
+
+        let score = 0;
+        questionsData.forEach((item, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            if (selected && selected.value === item.a) score += 5;
+        });
+
+        // 鎖定按鈕
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = "正在傳送成績...";
+
+        const payload = {
+            className: className,
+            seatNo: seatNo,
+            name: name,
+            score: score
+        };
+
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzfqRjnnUNOZk7CF2n0ROnj3jyFH917p310YCOzPUQ5s1KpJT6Q76_QWjWZDWVhe6QIeg/exec';
+
+        try {
+            // 使用 no-cors 模式發送，避免跨域阻攔（雖然無法讀取 response，但數據會進去）
+            await fetch(GAS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(payload)
+            });
+
+            // 顯示結果
+            document.getElementById('quizForm').style.display = 'none';
+            document.getElementById('resultDisplay').style.display = 'block';
+            document.getElementById('finalScore').innerText = score;
+            document.getElementById('studentDetail').innerText = `${className} ${seatNo}號 ${name}`;
+        } catch (err) {
+            alert("系統錯誤，請截圖分數畫面交給老師！你的分數是：" + score);
+        }
+    }
+</script>
+
+</body>
+</html>

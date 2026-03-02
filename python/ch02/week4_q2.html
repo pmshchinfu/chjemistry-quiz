@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>Python 實作 2：成績等第系統</title>
+    <style>
+        :root { --primary: #6c5ce7; --bg: #f4f7f6; --dark-code: #2d3436; }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background-color: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: white; width: 90%; max-width: 600px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { color: var(--primary); text-align: center; margin-bottom: 10px; }
+        .hint { background: #fff9db; padding: 10px; border-left: 4px solid #fcc419; font-size: 0.9em; margin-bottom: 20px; color: #5c5c5c; }
+        
+        /* 程式碼區域樣式 */
+        .code-window { background: var(--dark-code); color: #fab1a0; padding: 25px; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 1.1em; line-height: 1.8; margin-bottom: 20px; }
+        .indent { padding-left: 30px; color: #a29bfe; }
+        select { background: #444; color: #fff; border: 1px solid #666; border-radius: 4px; padding: 3px; font-family: monospace; cursor: pointer; }
+        select:focus { border-color: var(--primary); outline: none; }
+
+        /* 按鈕與訊息 */
+        .btn-group { display: flex; flex-direction: column; gap: 12px; }
+        button { padding: 12px; border: none; border-radius: 6px; font-size: 1em; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        #check-btn { background: var(--primary); color: white; }
+        #check-btn:hover { background: #5649c0; }
+        #download-btn { background: #dfe6e9; color: #b2bec3; cursor: not-allowed; }
+        #download-btn.active { background: #00b894; color: white; cursor: pointer; }
+        #feedback { text-align: center; font-weight: bold; margin: 10px 0; min-height: 1.2em; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🏆 實作題 2：成績等第系統</h2>
+    <div class="hint">
+        <b>規則：</b> 90↑=A, 80-89=B, 70-79=C, 60-69=D, 60↓=F<br>
+        <b>任務：</b> 透過下拉選單填入正確的 Python 關鍵字。
+    </div>
+
+    
+
+    <div class="code-window">
+        <div>score = int(input("輸入分數: "))</div>
+        
+        <div>
+            <select id="q1">
+                <option value="">??</option>
+                <option value="if">if</option>
+                <option value="elif">elif</option>
+            </select>
+            score >= 90:
+        </div>
+        <div class="indent">print("等第: A")</div>
+
+        <div>
+            <select id="q2">
+                <option value="">??</option>
+                <option value="if">if</option>
+                <option value="elif">elif</option>
+            </select>
+            score >= 80:
+        </div>
+        <div class="indent">print("等第: B")</div>
+
+        <div>
+            <select id="q3">
+                <option value="">??</option>
+                <option value="if">if</option>
+                <option value="elif">elif</option>
+            </select>
+            score >= 70:
+        </div>
+        <div class="indent">print("等第: C")</div>
+
+        <div>
+            <select id="q4">
+                <option value="">??</option>
+                <option value="if">if</option>
+                <option value="elif">elif</option>
+            </select>
+            score >= 60:
+        </div>
+        <div class="indent">print("等第: D")</div>
+
+        <div>
+            <select id="q5">
+                <option value="">??</option>
+                <option value="elif">elif</option>
+                <option value="else">else</option>
+            </select>:
+        </div>
+        <div class="indent">print("等第: F")</div>
+    </div>
+
+    <div id="feedback"></div>
+
+    <div class="btn-group">
+        <button id="check-btn" onclick="validate()">檢查邏輯</button>
+        <button id="download-btn" onclick="downloadFile()" disabled>💾 下載 .py 檔案</button>
+    </div>
+</div>
+
+<script>
+    function validate() {
+        const q1 = document.getElementById('q1').value;
+        const q2 = document.getElementById('q2').value;
+        const q3 = document.getElementById('q3').value;
+        const q4 = document.getElementById('q4').value;
+        const q5 = document.getElementById('q5').value;
+        const feedback = document.getElementById('feedback');
+        const dlBtn = document.getElementById('download-btn');
+
+        // 檢查是否漏選
+        if (!q1 || !q2 || !q3 || !q4 || !q5) {
+            feedback.style.color = "#e67e22";
+            feedback.innerText = "⚠️ 還有格子沒填完喔！";
+            return;
+        }
+
+        // 正確答案檢查
+        if (q1 === 'if' && q2 === 'elif' && q3 === 'elif' && q4 === 'elif' && q5 === 'else') {
+            feedback.style.color = "#27ae60";
+            feedback.innerText = "✅ 太優秀了！邏輯完全正確。";
+            dlBtn.disabled = false;
+            dlBtn.classList.add('active');
+        } else {
+            feedback.style.color = "#e74c3c";
+            if (q1 === 'elif') {
+                feedback.innerText = "❌ 提示：程式的第一個判斷必須是 if。";
+            } else if (q5 === 'elif') {
+                feedback.innerText = "❌ 提示：最後一個沒條件的選項要用 else。";
+            } else {
+                feedback.innerText = "❌ 邏輯順序不對，請再檢查一次！";
+            }
+            dlBtn.disabled = true;
+            dlBtn.classList.remove('active');
+        }
+    }
+
+    function downloadFile() {
+        const pyCode = `score = int(input("請輸入 0-100 的分數："))\n\nif score >= 90:\n    print("等第: A")\nelif score >= 80:\n    print("等第: B")\nelif score >= 70:\n    print("等第: C")\nelif score >= 60:\n    print("等第: D")\nelse:\n    print("等第: F")\n\nprint("評估結束。")\ninput("按 Enter 鍵結束...")`;
+        const blob = new Blob([pyCode], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'grade_system.py';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+</script>
+
+</body>
+</html>

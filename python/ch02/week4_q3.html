@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>Python 挑戰 3：閏年判斷大考驗</title>
+    <style>
+        :root { --primary: #0984e3; --bg: #dfe6e9; --dark: #2d3436; --code-bg: #1e272e; }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background-color: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: white; width: 95%; max-width: 650px; padding: 35px; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); }
+        h2 { color: var(--primary); text-align: center; margin-bottom: 5px; }
+        .rule-card { background: #ebf5fb; border-radius: 10px; padding: 15px; margin: 20px 0; border-left: 6px solid var(--primary); font-size: 0.95em; line-height: 1.6; }
+        
+        .code-area { background: var(--code-bg); color: #dff9fb; padding: 25px; border-radius: 12px; font-family: 'Fira Code', 'Consolas', monospace; font-size: 1.05em; line-height: 2; margin-bottom: 25px; position: relative; }
+        .keyword { color: #ff79c6; font-weight: bold; }
+        .comment { color: #6272a4; font-style: italic; }
+        
+        select { background: #3d3d3d; color: #55efc4; border: 1px solid #555; border-radius: 4px; padding: 4px; font-weight: bold; font-family: monospace; outline: none; }
+        select:focus { border-color: #55efc4; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 15px; }
+        button { padding: 14px; border: none; border-radius: 8px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        #verify-btn { background: var(--primary); color: white; }
+        #verify-btn:hover { background: #0771c1; transform: translateY(-2px); }
+        #dl-btn { background: #b2bec3; color: white; cursor: not-allowed; }
+        #dl-btn.active { background: #00b894; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3); }
+        #status { text-align: center; font-weight: bold; margin: 15px 0; min-height: 1.5em; border-radius: 5px; padding: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🦁 實作題 3：閏年判斷魔王關</h2>
+    <div class="rule-card">
+        <b>閏年邏輯規則：</b><br>
+        1. 逢 4 的倍數為閏年 (餘數為 0)<br>
+        2. 但逢 100 的倍數不是閏年 (除非它也是 400 的倍數)<br>
+        3. 逢 400 的倍數一定是閏年
+    </div>
+
+    <div class="code-area">
+        <div>year = int(input("輸入年份: "))</div>
+        <div><span class="comment"># 挑戰：嘗試用一行組合邏輯來判斷</span></div>
+        <div><span class="keyword">if</span> (year % 4 == 0 <select id="op1"><option value="">??</option><option value="and">and</option><option value="or">or</option></select> year % 100 != 0) <select id="op2"><option value="">??</option><option value="and">and</option><option value="or">or</option></select> year % 400 == 0:</div>
+        <div style="padding-left: 30px;">print(f"{year} 是閏年")</div>
+        <div><span class="keyword">else</span>:</div>
+        <div style="padding-left: 30px;">print(f"{year} 是平年")</div>
+    </div>
+
+    <div id="status"></div>
+
+    <div class="btn-group">
+        <button id="verify-btn" onclick="checkLogic()">驗證邏輯</button>
+        <button id="dl-btn" onclick="getPythonFile()" disabled>💾 下載完整程式碼</button>
+    </div>
+</div>
+
+<script>
+    function checkLogic() {
+        const op1 = document.getElementById('op1').value;
+        const op2 = document.getElementById('op2').value;
+        const status = document.getElementById('status');
+        const dlBtn = document.getElementById('dl-btn');
+
+        if (!op1 || !op2) {
+            status.style.color = "#d35400";
+            status.innerText = "請選好兩個關鍵邏輯運算子！";
+            return;
+        }
+
+        // 正確答案：(year % 4 == 0 and year % 100 != 0) or year % 400 == 0
+        if (op1 === 'and' && op2 === 'or') {
+            status.style.color = "#27ae60";
+            status.style.backgroundColor = "#eafaf1";
+            status.innerText = "🎊 恭喜！你解開了閏年邏輯的終極密碼！";
+            dlBtn.disabled = false;
+            dlBtn.classList.add('active');
+        } else {
+            status.style.color = "#c0392b";
+            status.style.backgroundColor = "#fdedec";
+            if (op1 === 'or') {
+                status.innerText = "❌ 提示：(4的倍數) 與 (不是100的倍數) 必須同時成立。";
+            } else if (op2 === 'and') {
+                status.innerText = "❌ 提示：400的倍數是『另一種』成立的情況。";
+            } else {
+                status.innerText = "❌ 邏輯不對喔，再回頭看看規則提示。";
+            }
+            dlBtn.disabled = true;
+            dlBtn.classList.remove('active');
+        }
+    }
+
+    function getPythonFile() {
+        const code = `year = int(input("請輸入西元年份："))\n\n# 閏年判斷核心邏輯\n# (4的倍數 且 不是100的倍數) 或者 (是400的倍數)\nif (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):\n    print(f"{year} 年是【閏年】")\nelse:\n    print(f"{year} 年是【平年】")\n\ninput("\\n按 Enter 鍵結束程式...")`;
+        const blob = new Blob([code], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'leap_year.py';
+        a.click();
+    }
+</script>
+
+</body>
+</html>
